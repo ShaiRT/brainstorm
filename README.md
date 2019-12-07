@@ -1,3 +1,5 @@
+![build status](https://travis-ci.org/ShaiRT/BrainStorm.svg?branch=master)
+
 # BrainStorm
 
 Brain computer interface project for advanced system design course in TAU.

@@ -33,7 +33,7 @@ class Thought:
         data = struct.pack('QQI', self.user_id, time_int, len(encoded_thought))
         data += encoded_thought
         return data
-    
+
     def deserialize(data):
         user_id, timestamp, thought_size = struct.unpack('QQI', data[:20])
         thought = data[20:].decode('utf-8')
