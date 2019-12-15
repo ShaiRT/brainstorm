@@ -4,6 +4,8 @@ import threading
 from pathlib import Path
 from .utils import Listener
 import click
+from .utils import parser, Context
+from .utils import Snapshot, Hello, Config
 
 
 class Handler(threading.Thread):
@@ -24,28 +26,23 @@ class Handler(threading.Thread):
         '''
         try:
             while True:
-                header = self.conn.receive(20)
-                user_id, time_stamp, thought_size = \
-                    struct.unpack('QQI', header)
-                thought = self.conn.receive(thought_size).decode('utf-8')
-                time_format = '%Y-%m-%d_%H-%M-%S'
-                tm = time.localtime(time_stamp)
-                time_stamp = time.strftime(time_format, tm) + '.txt'
-                path = Path('.') / self.data_dir / str(user_id)
-
-                # save thought in file
+                hello = Hello.deserialize(self.conn.recieve_message())
+                user_id = hello.user_id
+                config = Config(parser.fields.keys())
+                self.conn.send_message(config.serialize())
+                snapshot = Snapshot.deserialize(self.conn.recieve_message())
+                time_stamp = snapshot.datetime
+                time_format = '%Y-%m-%d_%H-%M-%S-%f'
+                time_stamp = time_stamp.strftime(time_format)
+                path = Path('.') / self.data_dir / str(user_id) / time_stamp
+                context = Context(path)
                 with self.lock:
                     path.mkdir(parents=True, exist_ok=True)
-                    path = path / time_stamp
-                    if not path.exists():
-                        path.touch()
-                    else:
-                        thought = '\n' + thought
-                    with path.open(mode='a+') as f:
-                        f.write(thought)
+                    for field, f in parser.fields.items():
+                        f(context, snapshot)
 
         except Exception as error:
-            if not error.__str__() == 'Incomplete data: ':
+            if not error.__str__().startswith('Incomplete data'):
                 raise error
         finally:
             self.conn.close()

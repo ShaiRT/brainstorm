@@ -60,7 +60,7 @@ def get_index_html():
     for user_dir in Path(data_dir).iterdir():
         users_html.append(_USER_LINE_HTML.format(user_id=user_dir.name))
     index_html = _INDEX_HTML.format(users='\n'.join(users_html))
-    return index_html
+    return index_html, 200
 
 
 @website.route('/users/<user>')
@@ -69,13 +69,13 @@ def get_user_html(user):
     thoughts = []
     user_path = Path(data_dir) / user
     if not user_path.exists():
-        return 404, ''
+        return '', 404
     for f in user_path.iterdir():
         ts = format_time_stamp(f.name[:-4])
         thought = f.read_text()
         thoughts.append(_FILE_LINE_HTML.format(time_stamp=ts, thought=thought))
     user_html = _USER_HTML.format(user=user, files='\n'.join(thoughts))
-    return user_html
+    return user_html, 200
 
 
 @click.argument('address')
