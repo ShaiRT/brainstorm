@@ -1,31 +1,24 @@
 import pika
-import pymongo
 import json
 import datetime as dt
 import click
 import furl
+from . import mongodb_driver as db_driver
 
 
 class Saver:
     def __init__(self, database_url):
-        self.database_url = database_url
-        self.client = pymongo.MongoClient(database_url)
-        self.db = self.client.brainstorm
-        self.users = self.db.users
-        self.snapshots = self.db.snapshots
+        self.db = db_driver.Database(database_url)
 
     def save(self, field, data):
-        data = json.loads(data)
-        user = data['user']
-        del data['user']
-        data['user_id'] = user['user_id']
-        data['datetime'] = dt.datetime.fromtimestamp(data['datetime'] / 1000.0)
+        snapshot = json.loads(data)
+        user = snapshot['user']
+        del snapshot['user']
+        snapshot['user_id'] = user['user_id']
+        snapshot['datetime'] = dt.datetime.fromtimestamp(snapshot['datetime'] / 1000.0)
         user['birthday'] = dt.datetime.fromtimestamp(user['birthday'])
-        self.users.update_one({'user_id': user['user_id']},
-                              {'$set': user}, upsert=True)
-        snapshot_filter = {'user_id': user['user_id'],
-                           'datetime': data['datetime']}
-        self.snapshots.update_one(snapshot_filter, {'$set': data}, upsert=True)
+        self.db.save_user(user)
+        self.db.save_snapshot(snapshot)
 
 
 @click.group()

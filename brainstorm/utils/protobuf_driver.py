@@ -26,6 +26,7 @@ class ProtobufDriver:
         user = pb_json.MessageToDict(user, preserving_proto_field_name=True)
         user['birthday'] = dt.datetime.fromtimestamp(user['birthday'])
         user['gender'] = ProtobufDriver.genders[gender]
+        user['user_id'] = int(user['user_id'])
         return user
 
     def get_snapshot(self):
