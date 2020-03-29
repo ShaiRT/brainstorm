@@ -1,3 +1,4 @@
+'''
 import datetime as dt
 import io
 import multiprocessing
@@ -96,7 +97,7 @@ def test_race_condition(data_dir):
         assert thoughts == {_THOUGHT_1, _THOUGHT_2}
 
 
-'''
+
 def test_cli(tmp_path):
     host, port = _SERVER_ADDRESS
     process = subprocess.Popen(
@@ -116,7 +117,7 @@ def test_cli(tmp_path):
     thought_path_2 = _get_path(tmp_path, _USER_2, _TIMESTAMP_2)
     assert thought_path_1.read_text() == _THOUGHT_1
     assert thought_path_2.read_text() == _THOUGHT_2
-'''
+
 
 
 def _run_server(pipe, data_dir):
@@ -142,3 +143,4 @@ def _serialize_thought(user_id, timestamp, thought):
 def _get_path(data_dir, user_id, timestamp):
     datetime = dt.datetime.fromtimestamp(timestamp)
     return data_dir / f'{user_id}/{datetime:%Y-%m-%d_%H-%M-%S}.txt'
+'''

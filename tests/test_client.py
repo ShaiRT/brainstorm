@@ -1,3 +1,4 @@
+'''
 import datetime as dt
 import multiprocessing
 import pathlib
@@ -76,7 +77,7 @@ def test_timestamp(get_message):
     user_id, timestamp, thought = get_message()
     _assert_now(timestamp)
 
-'''
+
 def test_cli(get_message):
     host, port = _SERVER_ADDRESS
     process = subprocess.Popen(
@@ -99,7 +100,7 @@ def test_cli_error():
     )
     stdout, _ = process.communicate()
     assert b'error' in stdout.lower()
-'''
+
 
 
 def _run_server(pipe):
@@ -137,3 +138,4 @@ def _receive_all(connection, size):
 def _assert_now(timestamp):
     now = int(time.time())
     assert abs(now - timestamp) < 5
+'''

@@ -1,29 +1,31 @@
-from .utils import Connection
-from .thought import Thought
-import datetime as dt
 import click
-from .utils import Reader, Snapshot, Config, Hello
+from brainstorm.utils import Reader
+import requests
+import furl
+import bson
 
 
-@click.argument('address')
-@click.argument('user_id', type=click.INT)
-@click.argument('thought')
-def upload_thought(address, user_id, thought):
-    ip, port = address.split(':')
-    address = (ip, int(port))
-    timestamp = dt.datetime.now()
-    thought = Thought(user_id, timestamp, thought)
-    with Connection.connect(*address) as conn:
-        conn.send(thought.serialize())
+@click.group()
+def client_cli():
+    pass
 
+
+@client_cli.command('upload-sample')
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
+@click.option('port', '-p', '--port', default=8000, show_default=True)
 @click.argument('path')
-@click.argument('port', type=click.INT)
-def run_client(path, port):
-	ip = '0.0.0.0'
-	reader = Reader(path)
-	hello = reader.hello
-	for snapshot in reader:
-		with Connection.connect(ip, port) as conn:
-			conn.send_message(hello.serialize())
-			config = Config.deserialize(conn.recieve_message())
-			conn.send_message(snapshot.serialize())
+def upload_sample(path, host='127.0.0.1', port=8000):
+    reader = Reader(path)
+    for snapshot in reader:
+        snapshot['user'] = reader.user
+        url = furl.furl(scheme='http', host='127.0.0.1',
+                        port=8000, path='snapshot').url
+        r = requests.post(url=url, data=bson.encode(snapshot),
+                          headers={'Connection': 'close'})
+        if not r.status_code == 204:
+            raise ConnectionError(f'Response status code: {r.status_code}')
+        r.close()
+
+
+if __name__ == '__main__':
+    client_cli()

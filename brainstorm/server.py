@@ -1,75 +1,75 @@
-import time
-import struct
-import threading
+import flask
+import pika
 from pathlib import Path
-from .utils import Listener
+import json
+import bson
+import furl
+import functools as ft
 import click
-from .utils import parser, Context
-from .utils import Snapshot, Hello, Config
 
 
-class Handler(threading.Thread):
-    '''
-    handler for a client that connected to server
-    '''
-    lock = threading.Lock()
-
-    def __init__(self, conn, data_dir):
-        super().__init__()
-        self.conn = conn
-        self.data_dir = data_dir
-
-    def run(self):  # invoked by start
-        '''
-        Recieves data from client and saves it in file
-        raises exception for incomplete data
-        '''
-        try:
-            while True:
-                hello = Hello.deserialize(self.conn.recieve_message())
-                user_id = hello.user_id
-                config = Config(parser.fields.keys())
-                self.conn.send_message(config.serialize())
-                snapshot = Snapshot.deserialize(self.conn.recieve_message())
-                time_stamp = snapshot.datetime
-                time_format = '%Y-%m-%d_%H-%M-%S-%f'
-                time_stamp = time_stamp.strftime(time_format)
-                path = Path('.') / self.data_dir / str(user_id) / time_stamp
-                context = Context(path)
-                with self.lock:
-                    path.mkdir(parents=True, exist_ok=True)
-                    for field, f in parser.fields.items():
-                        f(context, snapshot)
-
-        except Exception as error:
-            if not error.__str__().startswith('Incomplete data'):
-                raise error
-        finally:
-            self.conn.close()
+server = flask.Flask('brainstorm')
 
 
-class Server:
-    def __init__(self, address, data_dir):
-        self.address = address
-        self.data_dir = data_dir
-
-    def start(self):
-        '''
-        Run server that listens on address
-        creates a new Handler for each client
-        '''
-        ip, port = self.address
-        with Listener(port, ip) as listener:
-            while True:
-                conn = listener.accept()
-                handler = Handler(conn, self.data_dir)
-                handler.start()
+@click.group()
+def server_cli():
+    pass
 
 
-@click.argument('address')
-@click.argument('data_dir')
-def run_server(address, data_dir):
-    ip, port = address.split(':')
-    address = (ip, int(port))
-    server = Server(address, data_dir)
-    server.start()
+@server.route('/snapshot', methods=['POST'])
+def handle_snapshot():
+    snapshot = bson.decode(flask.request.get_data())
+    save_blobs(snapshot)
+    server.config['publish'](snapshot)
+    return '', 204
+
+
+def save_blobs(snapshot):
+    date = snapshot['datetime']
+    time_format = '%Y-%m-%d_%H-%M-%S-%f'
+    time_stamp = date.strftime(time_format)
+    user_id = snapshot['user']['user_id']
+    path = Path().absolute() / 'data' / str(user_id) / time_stamp
+    path.mkdir(parents=True, exist_ok=True)
+    color_image_path = path / 'color_image'
+    depth_image_path = path / 'depth_image'
+    color_image_path.write_bytes(snapshot['color_image']['data'])
+    depth_image_path.write_bytes(snapshot['depth_image']['data'])
+    del snapshot['color_image']['data']
+    del snapshot['depth_image']['data']
+    snapshot['color_image']['path'] = str(color_image_path)
+    snapshot['depth_image']['path'] = str(depth_image_path)
+    snapshot['user']['birthday'] = snapshot['user']['birthday'].timestamp()
+    snapshot['datetime'] = snapshot['datetime'].timestamp() * 1000
+
+
+def publish_to_queue(snapshot, *, url):
+    f = furl.furl(url)
+    host = f.host
+    port = f.port
+    params = pika.ConnectionParameters(host=host, port=port)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+    channel.exchange_declare(exchange='snapshots', exchange_type='fanout')
+    channel.basic_publish(exchange='snapshots',
+                          routing_key='', body=json.dumps(snapshot))
+    connection.close()
+
+
+def run_server(host='127.0.0.1', port=8000, publish=print):
+    global server
+    server.config['publish'] = publish
+    server.run(host=host, port=port, debug=False, threaded=True)
+
+
+@server_cli.command('run-server')
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
+@click.option('port', '-p', '--port', default=8000, show_default=True)
+@click.argument('url')
+def run_server_with_queue(url, host='127.0.0.1', port=8000):
+    publish = ft.partial(publish_to_queue, url=url)
+    run_server(host=host, port=port, publish=publish)
+
+
+if __name__ == '__main__':
+    server_cli()
