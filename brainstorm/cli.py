@@ -15,8 +15,10 @@ def cli():
 def get_users(host='127.0.0.1', port=5000):
 	url = furl.furl(scheme='http', host=host, port=port, path='users').url
 	response = requests.get(url)
-	data = response.json()
-	print(data)
+	users = response.json()
+	for user in users:
+		print(user)
+		click.echo(f"user {user['user_id']}: {user['username']}")
 
 
 @cli.command()
@@ -29,8 +31,8 @@ def get_user(user_id, host='127.0.0.1', port=5000):
 	response = requests.get(url.url)
 	if response.status_code == 404:
 		return None
-	data = response.json()
-	print(data)
+	user = response.json()
+	click.echo(f"user {user['user_id']}: {user['username']}, born {user['birthday']} ({user['gender']})")
 
 
 @cli.command('get-snapshots')
@@ -41,8 +43,9 @@ def get_user_snapshots(user_id, host='127.0.0.1', port=5000):
 	url = furl.furl(scheme='http', host=host, port=port)
 	url.path.segments = ['users', user_id, 'snapshots']
 	response = requests.get(url.url)
-	data = response.json()
-	print(data)
+	snapshots = response.json()
+	for snapshot in snapshots:
+		click.echo(f"Snapshot {snapshot['snapshot_id']} from {snapshot['datetime']}")
 
 
 @cli.command()
@@ -57,7 +60,8 @@ def get_snapshot(user_id, snapshot_id, host='127.0.0.1', port=5000):
 	if response.status_code == 404:
 		return None
 	data = response.json()
-	print(data)
+	click.echo(f"Snapshot {snapshot['snapshot_id']} from {snapshot['datetime']}. \
+		Available results: {', '.join(snapshot['available_results'])}")
 
 
 @cli.command('get-result')
@@ -75,7 +79,7 @@ def get_snapshot_result(user_id, snapshot_id, result_name, host='127.0.0.1', por
 		return None
 	data = response.json()
 	if path is None:
-		print(data)
+		click.echo(data)
 		return
 	with open(path, 'w') as f:
 		json.dump(data, f)

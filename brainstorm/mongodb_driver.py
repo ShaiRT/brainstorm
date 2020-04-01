@@ -18,7 +18,7 @@ class Database:
 
     def save_user(self, user):
         query = {'user_id': user['user_id']}
-        update = {'$set': user, '$setOnInsert': {'snapshouts_count': 0}}
+        update = {'$set': user, '$setOnInsert': {'snapshots_count': 0}}
         self.users.update_one(query, update, upsert=True)
 
     def save_snapshot(self, snapshot):
@@ -27,9 +27,9 @@ class Database:
         result = self.snapshots.update_one(query, update, upsert=True)
         if result.upserted_id is not None:
             user = self.users.find_one_and_update({'user_id': snapshot['user_id']},
-                                                  {'$inc': {'snapshouts_count': 1}},
+                                                  {'$inc': {'snapshots_count': 1}},
                                                   return_document=pymongo.ReturnDocument.AFTER)
-            update = {'$set': {'snapshot_id': user['snapshouts_count']}}
+            update = {'$set': {'snapshot_id': user['snapshots_count']}}
             self.snapshots.update_one(query, update)
 
     def get_users(self):
@@ -38,7 +38,7 @@ class Database:
 
     def get_user(self, user_id):
         query = {'user_id': user_id}
-        projection = {'_id': False, 'snapshouts_count': False}
+        projection = {'_id': False, 'snapshots_count': False}
         return self.users.find_one(filter=query, projection=projection)
 
     def get_user_snapshots(self, user_id):

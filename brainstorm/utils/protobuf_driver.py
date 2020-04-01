@@ -41,7 +41,7 @@ class ProtobufDriver:
             self._offset = sample.tell()
         datetime = snapshot.datetime
         color_image_data = snapshot.color_image.data
-        depth_image_data = snapshot.depth_image.SerializeToString()[10:]
+        depth_image_data = snapshot.depth_image.SerializeToString()[10:] # TODO: memoryview?
         snapshot = pb_json.MessageToDict(snapshot,
                                          preserving_proto_field_name=True)
         snapshot['datetime'] = dt.datetime.\

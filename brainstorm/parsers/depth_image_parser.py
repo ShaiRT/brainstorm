@@ -10,7 +10,7 @@ def parse_depth_image(snapshot):
     with open(image_info['path'], 'rb') as f:
         data_array = np.frombuffer(f.read(), '<f')
     pic = np.reshape(data_array, image_size)
-    figure, ax = plt.subplots()
+    figure, ax = plt.subplots() # fig = plt.figure()?
     ax.imshow(pic, cmap='plasma')
     figure.savefig(image_path)
     figure.clf()

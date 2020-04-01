@@ -16,14 +16,14 @@ for path in root.glob('**/*.py'):
     m = importlib.import_module(path.stem, package='brainstorm.parsers')
     sys.path.pop(0)
     for name, obj in m.__dict__.items():
-        if isinstance(obj, type):
+        if inspect.isclass(obj):
             if not name.endswith('Parser'):
                 continue
             parser_name = sc.snakecase(name)[:-7]
             parser = obj()
             parsers[parser_name] = parser.parse
             continue
-        if callable(obj):
+        if inspect.isfunction(obj):
             if not name.startswith('parse_'):
                 continue
             parsers[name[6:]] = obj
