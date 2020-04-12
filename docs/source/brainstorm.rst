@@ -45,6 +45,8 @@ brainstorm.client module
    :undoc-members:
    :show-inheritance:
 
+.. autofunction:: upload_sample
+
 brainstorm.mongodb\_driver module
 ---------------------------------
 

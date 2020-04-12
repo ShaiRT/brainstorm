@@ -10,7 +10,9 @@ Welcome to brainstorm's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+   brainstorm
+   parsers
+   utils
 
 Indices and tables
 ==================
