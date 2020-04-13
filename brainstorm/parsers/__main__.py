@@ -22,13 +22,16 @@ def parse_path(name, path):
 
 def parse_and_publish(receiving_channel, method, properties,
                       data, *, host, port, parser):
+    parsed_data = parse(parser, data)
+    if not parsed_data:
+        receiving_channel.basic_ack(delivery_tag=method.delivery_tag)
+        return None
     params = pika.ConnectionParameters(host=host, port=port)
     connection = pika.BlockingConnection(params)
     publishing_channel = connection.channel()
     publishing_channel.exchange_declare(exchange='data', exchange_type='topic')
-    data = parse(parser, data)
     publishing_channel.basic_publish(exchange='data',
-                                     routing_key=parser, body=data)
+                                     routing_key=parser, body=parsed_data)
     connection.close()
     receiving_channel.basic_ack(delivery_tag=method.delivery_tag)
 

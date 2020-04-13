@@ -1,4 +1,4 @@
-import PIL
+import PIL.Image
 
 
 def parse_color_image(snapshot):

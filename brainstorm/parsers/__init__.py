@@ -32,4 +32,6 @@ for path in root.glob('**/*.py'):
 def parse(name, data):
     global parsers
     snapshot = json.loads(data)
+    if name not in snapshot:
+        return None
     return json.dumps(parsers[name](snapshot))
