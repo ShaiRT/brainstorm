@@ -3,7 +3,7 @@ import json
 import datetime as dt
 import click
 import furl
-from . import mongodb_driver as db_driver
+import brainstorm.database_drivers.mongodb_driver as db_driver
 
 
 class Saver:

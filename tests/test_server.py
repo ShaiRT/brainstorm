@@ -1,146 +1,49 @@
-'''
-import datetime as dt
-import io
-import multiprocessing
-import pathlib
-import signal
-import socket
-import struct
-import subprocess
-import sys
-import threading
-import time
-
+import brainstorm.server.server as server
+from pathlib import Path
 import pytest
-
-import brainstorm as bs
-
-_IP, _PORT = '127.0.0.1', 6000
-_SERVER_ADDRESS = _IP, _PORT
-_SERVER_ADDRESS_STR = f'{_IP}:{_PORT}'
-_SERVER_PATH = pathlib.Path(__file__).absolute().parent.parent / 'brainstorm'
-
-_HEADER_FORMAT = 'QQI'
-
-_USER_1 = 1
-_USER_2 = 2
-_TIMESTAMP_1 = int(dt.datetime(2019, 10, 25, 15, 12, 5, 228000).timestamp())
-_TIMESTAMP_2 = int(dt.datetime(2019, 10, 25, 15, 15, 2, 304000).timestamp())
-_THOUGHT_1 = "I'm hungry"
-_THOUGHT_2 = "I'm sleepy"
+import os
 
 
-@pytest.fixture
-def data_dir(tmp_path):
-    parent, child = multiprocessing.Pipe()
-    process = multiprocessing.Process(target=_run_server, args=(child, tmp_path))
-    process.start()
-    parent.recv()
-    try:
-        yield tmp_path
-    finally:
-        process.terminate()
-        process.join()
+def test_save_blobs_datetime(user, snapshot, tmp_path):
+    snapshot['user'] = user
+    server.save_blobs(snapshot, path=tmp_path)
+    assert type(snapshot['datetime']) == float
+    assert type(snapshot['user']['birthday']) == float
 
 
-def test_user_id(data_dir):
-    _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
-    user_dir = data_dir / str(_USER_1)
-    assert user_dir.exists()
-    assert user_dir.is_dir()
-    _upload_thought(_USER_2, _TIMESTAMP_1, _THOUGHT_1)
-    user_dir = data_dir / str(_USER_2)
-    assert user_dir.exists()
-    assert user_dir.is_dir()
+def compute_path(path, snapshot):
+    date = snapshot['datetime']
+    time_format = '%Y-%m-%d_%H-%M-%S-%f'
+    time_stamp = date.strftime(time_format)
+    user_id = snapshot['user']['user_id']
+    path = Path(path).absolute() / str(user_id) / time_stamp
+    return path
+    
+
+def test_save_blobs_paths(user, snapshot, tmp_path):
+    snapshot['user'] = user
+    color_image_path = compute_path(tmp_path, snapshot) / 'color_image'
+    depth_image_path = compute_path(tmp_path, snapshot) / 'depth_image'    
+    server.save_blobs(snapshot, path=tmp_path)
+    assert 'path' in snapshot['color_image']
+    assert 'path' in snapshot['depth_image']
+    assert snapshot['color_image']['path'] == str(color_image_path)
+    assert snapshot['depth_image']['path'] == str(depth_image_path)
 
 
-def test_timestamp(data_dir):
-    thought_path = _get_path(data_dir, _USER_1, _TIMESTAMP_1)
-    assert not thought_path.exists()
-    _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
-    assert thought_path.exists()
-    thought_path = _get_path(data_dir, _USER_1, _TIMESTAMP_2)
-    assert not thought_path.exists()
-    _upload_thought(_USER_1, _TIMESTAMP_2, _THOUGHT_1)
-    assert thought_path.exists()
+def test_save_blobs_no_data(user, snapshot, tmp_path):
+    snapshot['user'] = user
+    server.save_blobs(snapshot, path=tmp_path)
+    assert 'data' not in snapshot['color_image']
+    assert 'data' not in snapshot['depth_image']
+    
+
+def test_save_blobs(user, snapshot, tmp_path):
+    snapshot['user'] = user
+    color_image_path = compute_path(tmp_path, snapshot) / 'color_image'
+    depth_image_path = compute_path(tmp_path, snapshot) / 'depth_image'
+    server.save_blobs(snapshot, path=tmp_path)
+    assert color_image_path.exists()
+    assert depth_image_path.exists()
 
 
-def test_thought(data_dir):
-    _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
-    thought_path = _get_path(data_dir, _USER_1, _TIMESTAMP_1)
-    assert thought_path.read_text() == _THOUGHT_1
-    _upload_thought(_USER_2, _TIMESTAMP_2, _THOUGHT_2)
-    thought_path = _get_path(data_dir, _USER_2, _TIMESTAMP_2)
-    assert thought_path.read_text() == _THOUGHT_2
-
-
-def test_partial_data(data_dir):
-    message = _serialize_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
-    with socket.socket() as connection:
-        time.sleep(0.1) # Wait for server to start listening.
-        connection.connect(_SERVER_ADDRESS)
-        for c in message:
-            connection.sendall(bytes([c]))
-            time.sleep(0.01)
-    thought_path = _get_path(data_dir, _USER_1, _TIMESTAMP_1)
-    assert thought_path.read_text() == _THOUGHT_1
-
-
-def test_race_condition(data_dir):
-    timestamp = _TIMESTAMP_1
-    for _ in range(10):
-        timestamp += 1
-        _upload_thought(_USER_1, timestamp, _THOUGHT_1)
-        _upload_thought(_USER_1, timestamp, _THOUGHT_2)
-        thought_path = _get_path(data_dir, _USER_1, timestamp)
-        thoughts = set(thought_path.read_text().splitlines())
-        assert thoughts == {_THOUGHT_1, _THOUGHT_2}
-
-
-
-def test_cli(tmp_path):
-    host, port = _SERVER_ADDRESS
-    process = subprocess.Popen(
-        ['python', '-m', _SERVER_PATH, 'run-server', f'{host}:{port}', str(tmp_path)],
-        stdout = subprocess.PIPE,
-    )
-    def run_server():
-        process.communicate()
-    thread = threading.Thread(target=run_server)
-    thread.start()
-    time.sleep(0.1)
-    _upload_thought(_USER_1, _TIMESTAMP_1, _THOUGHT_1)
-    _upload_thought(_USER_2, _TIMESTAMP_2, _THOUGHT_2)
-    process.send_signal(signal.SIGINT)
-    thread.join()
-    thought_path_1 = _get_path(tmp_path, _USER_1, _TIMESTAMP_1)
-    thought_path_2 = _get_path(tmp_path, _USER_2, _TIMESTAMP_2)
-    assert thought_path_1.read_text() == _THOUGHT_1
-    assert thought_path_2.read_text() == _THOUGHT_2
-
-
-
-def _run_server(pipe, data_dir):
-    pipe.send('read')
-    bs.run_server(_SERVER_ADDRESS_STR, data_dir)
-
-
-def _upload_thought(user_id, timestamp, thought):
-    message = _serialize_thought(user_id, timestamp, thought)
-    with socket.socket() as connection:
-        time.sleep(0.1) # Wait for server to start listening.
-        connection.settimeout(2)
-        connection.connect(_SERVER_ADDRESS)
-        connection.sendall(message)
-    time.sleep(0.2) # Wait for server to write thought.
-
-
-def _serialize_thought(user_id, timestamp, thought):
-    header = struct.pack(_HEADER_FORMAT, user_id, timestamp, len(thought))
-    return header + thought.encode()
-
-
-def _get_path(data_dir, user_id, timestamp):
-    datetime = dt.datetime.fromtimestamp(timestamp)
-    return data_dir / f'{user_id}/{datetime:%Y-%m-%d_%H-%M-%S}.txt'
-'''

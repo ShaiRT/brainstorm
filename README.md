@@ -1,5 +1,6 @@
 ![build status](https://travis-ci.org/ShaiRT/BrainStorm.svg?branch=master)
 ![coverage](https://codecov.io/gh/ShaiRT/BrainStorm/branch/master/graph/badge.svg)
+![Documentation Status](https://readthedocs.org/projects/brainstormproject/badge/?version=latest)
 
 # BrainStorm
 

@@ -3,7 +3,7 @@ import flask
 import json
 import os
 
-from . import mongodb_driver as db_driver
+import brainstorm.database_drivers.mongodb_driver as db_driver
 from flask_cors import CORS
 
 

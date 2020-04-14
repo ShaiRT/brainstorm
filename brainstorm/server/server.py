@@ -1,7 +1,6 @@
-"""A server that recieves samples from clients.
+"""A server that recieves snapshots from clients.
 """
 import bson
-import click
 import flask
 import functools as ft
 import furl
@@ -13,23 +12,19 @@ import pika
 from pathlib import Path
 
 
-'''# this code will suppress flask messages:
+# this code will suppress flask messages:
 log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)'''
+log.setLevel(logging.ERROR)
 os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 
 
 server = flask.Flask('brainstorm')
 
 
-@click.group()
-def server_cli():
-    pass
-
-
 @server.route("/shutdown", methods=['POST'])
 def shutdown_server():
     """This function shuts down the server.
+    Triggered by a POST to /shutdown
 
     Returns:
         200 OK
@@ -48,27 +43,31 @@ def shutdown_server():
 @server.route('/snapshot', methods=['POST'])
 def handle_snapshot():
     """Handle a snapshot that arrived.
+    Triggered by a POST to /snapshot.
+    Assumes the POST contains a snapshot in bson format.
 
     Returns:
         200 OK
     """
     snapshot = bson.decode(flask.request.get_data())
-    save_blobs(snapshot)
+    save_blobs(snapshot, path=server.config['path'])
     server.config['publish'](snapshot)
     return '', 200
 
 
-def save_blobs(snapshot):
-    """Save color and depth image of snapshot
+def save_blobs(snapshot, *, path):
+    '''Save color and depth image of snapshot
+    and convert datetime objects to integers
 
-    Args:
-        snapshot (dict): the snapshot
-    """
+    Arguments:
+        snapshot {dict} -- the snapshot
+        path {str} -- path to save the data
+    '''
     date = snapshot['datetime']
     time_format = '%Y-%m-%d_%H-%M-%S-%f'
     time_stamp = date.strftime(time_format)
     user_id = snapshot['user']['user_id']
-    path = Path().absolute() / 'data' / str(user_id) / time_stamp
+    path = Path(path).absolute() / str(user_id) / time_stamp
     path.mkdir(parents=True, exist_ok=True)
     color_image_path = path / 'color_image'
     depth_image_path = path / 'depth_image'
@@ -82,8 +81,25 @@ def save_blobs(snapshot):
     snapshot['datetime'] = snapshot['datetime'].timestamp() * 1000
 
 
+def run_server(*, host='127.0.0.1', port=8000, publish=print, path='data'):
+    '''run the servet at 'http://host:port'
+
+    Keyword Arguments:
+        host {str} -- the server host (default: {'127.0.0.1'})
+        port {int} -- the server port (default: {8000})
+        publish {function} -- function to handle snapshots (default: {print})
+        path {str} -- path to save blobs (default: {'data'})
+    '''
+    global server
+    server.config['publish'] = publish
+    server.config['path'] = path
+    server.run(host=host, port=port, debug=False, threaded=True)
+
+
 def publish_to_queue(snapshot, *, url):
     """Publish the snapshot to the message queue
+    Supports rabbitmq as a message queue
+    snapshots are published to a 'snapshots' exchange
 
     Args:
         snapshot (dict): the snapshot
@@ -101,34 +117,17 @@ def publish_to_queue(snapshot, *, url):
     connection.close()
 
 
-def run_server(host='127.0.0.1', port=8000, publish=print):
-    """Summary
+def run_server_with_queue(url, *, host='127.0.0.1', port=8000, path='data'):
+    '''run the server with message queue
+    supports rabbitmq as a message queue.
 
-    Args:
-        host (str, optional): Description
-        port (int, optional): Description
-        publish (TYPE, optional): Description
-    """
-    global server
-    server.config['publish'] = publish
-    server.run(host=host, port=port, debug=False, threaded=True)
+    Arguments:
+        url {str} -- message queue url
 
-
-@server_cli.command('run-server')
-@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
-@click.option('port', '-p', '--port', default=8000, show_default=True)
-@click.argument('url')
-def run_server_with_queue(url, host='127.0.0.1', port=8000):
-    """Summary
-
-    Args:
-        url (TYPE): Description
-        host (str, optional): Description
-        port (int, optional): Description
-    """
+    Keyword Arguments:
+        host {str} -- server host (default: {'127.0.0.1'})
+        port {int} -- server port (default: {8000})
+        path {str} -- directory for blob storage (default: {'data'})
+    '''
     publish = ft.partial(publish_to_queue, url=url)
-    run_server(host=host, port=port, publish=publish)
-
-
-if __name__ == '__main__':
-    server_cli()
+    run_server(host=host, port=port, publish=publish, path=path)

@@ -14,6 +14,6 @@ python -m brainstorm.parsers run-parser 'pose' 'rabbitmq://localhost:5672/' &
 python -m brainstorm.parsers run-parser 'feelings' 'rabbitmq://localhost:5672/' &
 python -m brainstorm.parsers run-parser 'color_image' 'rabbitmq://localhost:5672/' &
 python -m brainstorm.parsers run-parser 'depth_image' 'rabbitmq://localhost:5672/' &
-python -m brainstorm.saver run-saver 'mongodb://localhost:27017' 'rabbitmq://localhost:5672/' &
-python -m brainstorm.api run-server -h 'localhost' -p 5000 -d 'mongodb://localhost:27017/' &
+python -m brainstorm.saver.saver run-saver 'mongodb://localhost:27017' 'rabbitmq://localhost:5672/' &
+python -m brainstorm.api.api run-server -h 'localhost' -p 5000 -d 'mongodb://localhost:27017/' &
 read -r -d '' _	

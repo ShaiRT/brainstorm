@@ -1,4 +1,4 @@
-from brainstorm.reader import Reader
+from brainstorm.client import Reader
 import pytest
 import subprocess
 import brainstorm.reader_drivers as drivers
@@ -34,7 +34,7 @@ def test_iter(mock_drivers, snapshot):
 
 def test_cli(user, snapshot):
     process = subprocess.Popen(
-        ['python', '-m', 'brainstorm.reader', 'read'],
+        ['python', '-m', 'brainstorm.client', 'read'],
         stderr=subprocess.PIPE)
     _, stderr = process.communicate()
     assert b'Missing argument' in stderr

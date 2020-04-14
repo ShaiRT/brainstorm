@@ -1,31 +1,17 @@
 import brainstorm.client as client
-import brainstorm.reader as reader
-import flask
+import brainstorm.client.reader as reader
 import pytest
-
-
-import bson
-import flask
-import functools as ft
-import furl
-import json
-import logging
-import os
-import pika
 import requests
-
-from pathlib import Path
-
-PORT = 6000
-HOST = 'localhost'
+import bson
 
 
 class MockReader():
     def __init__(self, path, driver):
-        print('i am mock reader')
+        pass
 
     def __iter__(self):
-        yield self.snapshot
+        yield self.snapshot.copy()
+
 
 @pytest.fixture
 def mock_reader(user, snapshot, monkeypatch):
@@ -34,48 +20,30 @@ def mock_reader(user, snapshot, monkeypatch):
     monkeypatch.setattr(reader, 'Reader', MockReader)
 
 
+def mock_post(url, data, headers):
+    mock_requests.data = data
+    class Response:
+        status_code = 200
 
+        def close(self):
+            pass
+    return Response()
 
-'''
-# this code will suppress flask messages:
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
-os.environ['WERKZEUG_RUN_MAIN'] = 'true'
-'''
-
-mock_server = flask.Flask('brainstorm')
-
-@mock_server.route("/shutdown", methods=['POST'])
-def shutdown_mock_server():
-    shutdown = flask.request.environ.get('werkzeug.mock_server.shutdown')
-    if shutdown is None:
-        raise RuntimeError('mock_server shutdown failed')
-    shutdown()
-    return '', 200
-
-@mock_server.route('/')
-def handle_index():
-    return 'hello', 200
-
-
-@mock_server.route('/snapshot', methods=['POST'])
-def handle_snapshot():
-    print('yay')
-    #snapshot = bson.decode(flask.request.get_data())
-    #mock_server.config['publish'](snapshot)
-    return '', 200
 
 @pytest.fixture
-def run_mock_server():
-    print('in server fixture')
-    global mock_server
-    mock_server.config['publish'] = print
-    mock_server.run(host=HOST, port=PORT, debug=False, threaded=True)
-    print('server is running')
+def mock_requests(monkeypatch):
+    monkeypatch.setattr(requests, 'post', mock_post)
+    return mock_requests
 
 
-def test_client(mock_reader, run_mock_server):
-    print('testing...')
-    client.upload_sample('.', host=HOST, port=PORT)
-    assert True
+def test_user(mock_reader, mock_requests, user):
+    client.upload_sample('.', host='localhost', port=8000)
+    recieved_snapshot = bson.decode(mock_requests.data)
+    assert recieved_snapshot['user'] == user
 
+
+def test_snapshot(mock_reader, mock_requests, user, snapshot):
+    client.upload_sample('.', host='localhost', port=8000)
+    recieved_snapshot = bson.decode(mock_requests.data)
+    del recieved_snapshot['user']
+    assert recieved_snapshot == snapshot

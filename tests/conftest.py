@@ -21,7 +21,7 @@ def user():
 
 
 @pytest.fixture
-def snapshot():
+def snapshot_no_blobs():
     snap = dict()
     snap['datetime'] = dt.datetime(2020, 6, 12)
     snap['pose'] = {'translation': {'x': 1, 'y': 2, 'z': 3},
@@ -33,6 +33,17 @@ def snapshot():
     my_dir = Path(inspect.getsourcefile(lambda: 0)).absolute().parent
     depth_image = PIL.Image.open(my_dir /'my_snapshot_heatmap.jpg').convert('F')
     color_image = PIL.Image.open(my_dir /'my_snapshot_image.jpg')
-    snap['depth_image'] = {'data': depth_image.tobytes(),'width': depth_image.width,'height': depth_image.height}
-    snap['color_image'] = {'data': color_image.tobytes(),'width': color_image.width,'height': color_image.height}
+    snap['depth_image'] = {'width': depth_image.width,'height': depth_image.height}
+    snap['color_image'] = {'width': color_image.width,'height': color_image.height}
+    return snap
+
+
+@pytest.fixture
+def snapshot(snapshot_no_blobs):
+    snap = snapshot_no_blobs
+    my_dir = Path(inspect.getsourcefile(lambda: 0)).absolute().parent
+    depth_image = PIL.Image.open(my_dir /'my_snapshot_heatmap.jpg').convert('F')
+    color_image = PIL.Image.open(my_dir /'my_snapshot_image.jpg')
+    snap['depth_image']['data'] = depth_image.tobytes()
+    snap['color_image']['data'] = color_image.tobytes()
     return snap
