@@ -1,5 +1,6 @@
 import brainstorm.server.server as server
 from pathlib import Path
+import bson
 import pytest
 import os
 
@@ -47,3 +48,80 @@ def test_save_blobs(user, snapshot, tmp_path):
     assert depth_image_path.exists()
 
 
+snapshot_post = None
+
+
+def mock_publish(data):
+    global snapshot_post
+    snapshot_post = data
+
+
+@pytest.fixture
+def mock_save_blobs(monkeypatch):
+    def mock_save(snapshot, path):
+        pass
+    monkeypatch.setattr(server,'save_blobs', mock_save)
+
+
+def test_handle_snapshot(snapshot, user, mock_save_blobs):
+    server.server.config['publish'] = mock_publish
+    server.server.config['path'] = '.'
+    snapshot['user'] = user
+    response = server.server.test_client().post('/snapshot', data=bson.encode(snapshot), 
+                                                headers={'Connection': 'close'})
+    assert response.status_code == 200
+    assert snapshot_post == snapshot
+
+
+
+
+'''
+def test_publish_to_queue(snapshot_no_blobs):
+    pass
+
+
+def publish_to_queue(snapshot, *, url):
+    f = furl.furl(url)
+    host = f.host
+    port = f.port
+    params = pika.ConnectionParameters(host=host, port=port)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+    channel.exchange_declare(exchange='snapshots', exchange_type='fanout')
+    channel.basic_publish(exchange='snapshots',
+                          routing_key='', body=json.dumps(snapshot))
+    connection.close()
+
+
+
+
+
+
+"""Tests for RabbitMQ fixtures."""
+from rabbitpy import Exchange, Queue
+
+from pytest_rabbitmq.factories.client import clear_rabbitmq
+
+
+def test_rabbitmq_clear_exchanges(rabbitmq, rabbitmq_proc):
+    channel = rabbitmq.channel()
+    exchange = Exchange(channel, 'cache-in')
+    exchange.declare()
+    queue = Queue(channel, 'fastlane')
+    queue.declare()
+    clear_rabbitmq(rabbitmq_proc, rabbitmq)
+
+
+
+
+    params = pika.ConnectionParameters(host=host, port=port)
+    connection = pika.BlockingConnection(params)
+    channel = connection.channel()
+    channel.exchange_declare(exchange='snapshots', exchange_type='fanout')
+    channel.queue_declare(queue=name)
+    channel.queue_bind(exchange='snapshots', queue=name)
+    channel.basic_qos(prefetch_count=1)
+    callback = ft.partial(parse_and_publish, host=host, port=port, parser=name)
+    channel.basic_consume(queue=name, on_message_callback=callback)
+    channel.start_consuming()
+'''

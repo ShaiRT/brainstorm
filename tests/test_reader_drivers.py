@@ -1,4 +1,3 @@
-"""Testing for the reader_drivers module"""
 import PIL.Image
 import brainstorm.reader_drivers as drivers
 import datetime as dt

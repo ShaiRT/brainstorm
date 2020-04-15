@@ -28,4 +28,5 @@ def run_server(url, *, host='127.0.0.1', port=8000, path='data'):
     run_server_with_queue(url=url, host=host, port=port, path=path)
 
 
-server_cli()
+if __name__ == '__main__':
+    server_cli()

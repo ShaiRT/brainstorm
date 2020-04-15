@@ -1,8 +1,22 @@
+"""A snapshot depth image parser
+"""
 import numpy as np
+
 from matplotlib import pyplot as plt
 
 
 def parse_depth_image(snapshot):
+    '''saves parsed depth image
+    to the same directory of the unparsed information
+
+    **assumes snapshot has a depth image, a user and datetime
+    
+    Arguments:
+        snapshot {dict} -- snapshot with a depth image
+    
+    Returns:
+        dict -- parsed depth image information
+    '''
     image_info = snapshot['depth_image']
     image_size = (image_info['height'], image_info['width'])
     image_path = image_info['path'] + '.png'

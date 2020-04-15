@@ -25,11 +25,11 @@ def read(path, driver='protobuf'):
                         must be a driver from brainstorm.reader_drivers
     '''
     reader = Reader(path, driver=driver)
-    print(reader)
+    click.echo(reader)
     for snapshot in reader:
         date = snapshot['datetime'].strftime('%B%e, %Y')
         time = snapshot['datetime'].strftime('%H:%M:%S.%f')
-        print(f'Snapshot from {date} at {time}')
+        click.echo(f'Snapshot from {date} at {time}')
 
 
 @client_cli.command('upload-sample')
@@ -58,5 +58,5 @@ def cli_upload_sample(path, *, host='127.0.0.1', port=8000,
     '''
     upload_sample(path=path, host=host, port=port, reader_driver=reader_driver)
 
-
-client_cli()
+if __name__ == '__main__':
+    client_cli()

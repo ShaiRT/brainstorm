@@ -1,7 +1,7 @@
 import pymongo
 
 
-class Database:
+class MongodbDriver:
 
     def __init__(self, database_url):
         self.client = pymongo.MongoClient(database_url)

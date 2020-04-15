@@ -1,14 +1,15 @@
-import pika
-import json
-import datetime as dt
+import brainstorm.database_drivers as db_drivers
 import click
+import datetime as dt
 import furl
-import brainstorm.database_drivers.mongodb_driver as db_driver
+import json
+import pika
 
 
 class Saver:
     def __init__(self, database_url):
-        self.db = db_driver.Database(database_url)
+        driver = furl.furl(database_url).scheme
+        self.db = db_drivers[driver](database_url)
 
     def save(self, field, data):
         snapshot = json.loads(data)

@@ -1,8 +1,11 @@
 import brainstorm.client as client
 import brainstorm.client.reader as reader
+import bson
 import pytest
 import requests
-import bson
+
+from brainstorm.client.__main__ import client_cli
+from click.testing import CliRunner
 
 
 class MockReader():
@@ -44,6 +47,27 @@ def test_user(mock_reader, mock_requests, user):
 
 def test_snapshot(mock_reader, mock_requests, user, snapshot):
     client.upload_sample('.', host='localhost', port=8000)
+    recieved_snapshot = bson.decode(mock_requests.data)
+    del recieved_snapshot['user']
+    assert recieved_snapshot == snapshot
+
+
+def test_cli_missing_argument():
+  runner = CliRunner()
+  result = runner.invoke(client_cli, ['upload-sample'])
+  assert 'Missing argument' in result.output
+
+
+def test_cli_user(mock_reader, mock_requests, user):
+    runner = CliRunner()
+    result = runner.invoke(client_cli, ['upload-sample', '.'])
+    recieved_snapshot = bson.decode(mock_requests.data)
+    assert recieved_snapshot['user'] == user
+
+
+def test_cli_snapshot(mock_reader, mock_requests, user, snapshot):
+    runner = CliRunner()
+    result = runner.invoke(client_cli, ['upload-sample', '.'])
     recieved_snapshot = bson.decode(mock_requests.data)
     del recieved_snapshot['user']
     assert recieved_snapshot == snapshot
