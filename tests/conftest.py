@@ -8,6 +8,7 @@ import PIL.Image
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+is_travis = (os.environ.get('TRAVIS') == 'true')
 
 
 @pytest.fixture
@@ -47,3 +48,21 @@ def snapshot(snapshot_no_blobs):
     snap['depth_image']['data'] = depth_image.tobytes()
     snap['color_image']['data'] = color_image.tobytes()
     return snap
+
+
+@pytest.fixture(scope='module')
+def mongo():
+    if not is_travis:
+        os.system('docker run --rm -d -p 9867:27017 --name test_mongo mongo')
+    yield 'mongodb://127.0.0.1:9867'
+    if not is_travis:
+        os.system('docker stop test_mongo')
+
+
+@pytest.fixture(scope='module')
+def rabbitmq():
+    if not is_travis:
+        os.system('docker run --rm -d -p 5672:5672 --name test_rabbitmq rabbitmq')
+    yield 'rabbitmq://127.0.0.1:5672'
+    if not is_travis:
+        os.system('docker stop test_rabbitmq')

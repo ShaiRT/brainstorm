@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { BrowserRouter as Router, Link, withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 
 
 class NavBar extends Component {
@@ -8,7 +8,7 @@ class NavBar extends Component {
 		return (
 					<nav className="navbar static-top navbar-dark bg-dark">
 						<Link to="/" className="text-decoration-none">
-							<a className="navbar-brand text-warning" href="#">
+							<a className="navbar-brand text-warning">
 								<span className="ml-3 h1 font-weight-bold">BrainStorm.</span>
 							</a>
 						</Link>

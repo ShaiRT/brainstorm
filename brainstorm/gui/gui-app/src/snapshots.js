@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import NavBar from './navbar';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
 import SingleUser from './single_user';
-import { MDBBtn, MDBCard, MDBCardBody, MDBCardImage, MDBCardTitle, MDBCardText, MDBRow, MDBCol } from 'mdbreact';
+import { MDBRow, MDBCol } from 'mdbreact';
 
 
 export default class Snapshots extends Component {
@@ -11,9 +11,9 @@ export default class Snapshots extends Component {
 	state = {user: {}, snapshots: [], loading: true }
 
 	async componentDidMount() {
-		const response1 = await fetch(`http://localhost:5000/users/${this.props.match.params.id}`);
+		const response1 = await fetch(`${window.api_url}/users/${this.props.match.params.id}`);
 	    const user = await response1.json();
-	    const response2 = await fetch(`http://localhost:5000/users/${this.props.match.params.id}/snapshots`);
+	    const response2 = await fetch(`${window.api_url}/users/${this.props.match.params.id}/snapshots`);
 	    const snapshots = await response2.json();
 	    this.setState({ user, snapshots, loading: false });
 	}
@@ -66,7 +66,7 @@ const SingleSnapshot = (props) => {
 
 				  
 				  <div class="view view-cascade overlay">
-				    <img class="card-img-top" src={`http://localhost:5000/users/${props.user_id}/snapshots/${props.snapshot.snapshot_id}/color_image/data`}
+				    <img class="card-img-top" src={`${window.api_url}/users/${props.user_id}/snapshots/${props.snapshot.snapshot_id}/color_image/data`}
 				      alt='' />
 				    <a>
 				      <div class="mask rgba-white-slight"></div>

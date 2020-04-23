@@ -32,6 +32,5 @@ def upload_sample(path, host='127.0.0.1', port=8000, reader_driver='protobuf'):
         r = requests.post(url=url, data=bson.encode(snapshot),
                           headers={'Connection': 'close'})
         if not r.status_code == 200:
-            raise ConnectionError(f'Upload failed \
-                with status code: {r.status_code}')
+            raise ConnectionError(f'Upload failed with status code: {r.status_code}')
         r.close()

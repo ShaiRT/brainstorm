@@ -5,11 +5,11 @@ import 'bootstrap-css-only/css/bootstrap.min.css';
 import 'mdbreact/dist/css/mdb.css';
 import * as serviceWorker from './serviceWorker';
 import "bootstrap/dist/css/bootstrap.css";
-import Home from './components/home';
-import Users from './components/users';
-import User from './components/user';
-import Snapshots from './components/snapshots'
-import Snapshot from './components/snapshot'
+import Home from './home';
+import Users from './users';
+import User from './user';
+import Snapshots from './snapshots'
+import Snapshot from './snapshot'
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
 

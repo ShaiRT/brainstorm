@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import NavBar from './navbar';
-import { BrowserRouter as Router, Link } from 'react-router-dom';
 import SingleUser from './single_user';
 
 export default class Users extends Component {
@@ -8,7 +7,7 @@ export default class Users extends Component {
 	state = {users: []}
 
 	async componentDidMount() {
-	    const response = await fetch('http://localhost:5000/users');
+	    const response = await fetch(`${window.api_url}/users`);
 	    const data = await response.json();
 	    this.setState({ users: data });
 	}

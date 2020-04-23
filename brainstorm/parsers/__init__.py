@@ -6,6 +6,8 @@ Files starting with '_' will be ignored.
 The parser classes will have one instance created when imported, 
 and must have a parse method.
 """
+import brainstorm.mq_drivers as mq_drivers
+import furl
 import importlib
 import inspect
 import json
@@ -72,47 +74,27 @@ def parse_path(name, path):
     """
     with open(path, 'rb') as f:
         data = f.read()
-    return parse(name, data)
-
-
-def _parse_and_publish(receiving_channel, method, properties,
-                      data, *, host, port, parser):
-    '''callback for message queue consuming
-    '''
-    parsed_data = parse(parser, data)
-    if not parsed_data:
-        receiving_channel.basic_ack(delivery_tag=method.delivery_tag)
-        return
-    params = pika.ConnectionParameters(host=host, port=port)
-    connection = pika.BlockingConnection(params)
-    publishing_channel = connection.channel()
-    publishing_channel.exchange_declare(exchange='data', exchange_type='topic')
-    publishing_channel.basic_publish(exchange='data',
-                                     routing_key=parser, body=parsed_data)
-    connection.close()
-    receiving_channel.basic_ack(delivery_tag=method.delivery_tag)
+    return parse(name, data)    
 
 
 def run_parser(name, url):
     """run parser to listen to message queue, parse data,
     and post back to 'data' topic exchange of the 
     message queue with routing_key=name.
-    **supports rabbitmq as a message queue
+    uses message queue from mq_drivers
     
     Args:
         name (str): name of the parser to be used
         url (str): url of the message queue
     """
-    f = furl.furl(url)
-    host = f.host
-    port = f.port
-    params = pika.ConnectionParameters(host=host, port=port)
-    connection = pika.BlockingConnection(params)
-    channel = connection.channel()
-    channel.exchange_declare(exchange='snapshots', exchange_type='fanout')
-    channel.queue_declare(queue=name)
-    channel.queue_bind(exchange='snapshots', queue=name)
-    channel.basic_qos(prefetch_count=1)
-    callback = ft.partial(_parse_and_publish, host=host, port=port, parser=name)
-    channel.basic_consume(queue=name, on_message_callback=callback)
-    channel.start_consuming()
+    def callback(data):
+        parsed_data = parse(name, data)
+        if not parsed_data:
+            return
+        publisher_class = mq_drivers[furl.furl(url).scheme]['publisher']
+        publisher = publisher_class(url, 'data', 'topic', name)
+        publisher.publish(parsed_data)
+
+    consumer_class = mq_drivers[furl.furl(url).scheme]['consumer']
+    consumer = consumer_class(url, 'snapshots', 'fanout')
+    consumer.consume(name, callback)

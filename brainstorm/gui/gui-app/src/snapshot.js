@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import NavBar from './navbar'
-import { BrowserRouter as Router, Link, withRouter } from 'react-router-dom';
+import { Link, withRouter } from 'react-router-dom';
 import RingLoader from "react-spinners/RingLoader";
 import SingleUser from './single_user';
 
@@ -8,7 +8,7 @@ class Snapshot extends Component {
 
 	state = {user: {}, 
 			 snapshot: {}, 
-			 image_src: `http://localhost:5000/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/color_image/data`, 
+			 image_src: `${window.api_url}/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/color_image/data`, 
 			 loading: true};
 
 	async componentDidMount() {
@@ -17,28 +17,34 @@ class Snapshot extends Component {
 	}
 
 	getData = async () => {
-		const response1 = await fetch(`http://localhost:5000/users/${this.props.match.params.id}`);
+		const response1 = await fetch(`${window.api_url}/users/${this.props.match.params.id}`);
 	    const user = await response1.json();
-	    const response2 = await fetch(`http://localhost:5000/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}`);
+	    const response2 = await fetch(`${window.api_url}/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}`);
 	    const snapshot = await response2.json();
 	   	snapshot.available_results.map(async (result) => {
-	   		var response = await fetch(`http://localhost:5000/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/${result}`);
+	   		var response = await fetch(`${window.api_url}/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/${result}`);
 	    	var data = await response.json();
 	   		snapshot[result] = data;
 	   	});
+	   	if (snapshot.feelings === undefined) {
+	   		snapshot.feelings = {};
+	   	}
+	   	if (snapshot.pose === undefined) {
+	   		snapshot.pose = {translation: {}, rotation: {}};
+	   	}
 	    this.setState({ user, snapshot });
 	}
 
 	handleMouseOver = () => {
     	this.setState({
-      		image_src: `http://localhost:5000/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/depth_image/data`
+      		image_src: `${window.api_url}/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/depth_image/data`
     	});
   	}
 
 
    	handleMouseOut = () => {
     	this.setState({
-      		image_src: `http://localhost:5000/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/color_image/data`
+      		image_src: `${window.api_url}/users/${this.props.match.params.id}/snapshots/${this.props.match.params.sid}/color_image/data`
     	});
   	}
 
@@ -47,7 +53,7 @@ class Snapshot extends Component {
   	}
 
   	getPercent = num => {
-  		if (num == undefined) {
+  		if (num === undefined) {
   			return ('-----');
   		}
   		num = (num + 1) / 2;

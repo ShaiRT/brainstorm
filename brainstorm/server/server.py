@@ -7,14 +7,15 @@ import furl
 import json
 import logging
 import os
-import pika
+import brainstorm.mq_drivers as mq_drivers
 
 from pathlib import Path
 
-
+'''
 # this code will suppress flask messages:
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
+'''
 os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 
 
@@ -51,7 +52,7 @@ def handle_snapshot():
     """
     snapshot = bson.decode(flask.request.get_data())
     save_blobs(snapshot, path=server.config['path'])
-    server.config['publish'](snapshot)
+    server.config['publish'](json.dumps(snapshot))
     return '', 200
 
 
@@ -96,30 +97,8 @@ def run_server(*, host='127.0.0.1', port=8000, publish=print, path='data'):
     server.run(host=host, port=port, debug=False, threaded=True)
 
 
-def publish_to_queue(snapshot, *, url):
-    """Publish the snapshot to the message queue
-    Supports rabbitmq as a message queue
-    snapshots are published to a 'snapshots' exchange
-
-    Args:
-        snapshot (dict): the snapshot
-        url (string): the message queue url
-    """
-    f = furl.furl(url)
-    host = f.host
-    port = f.port
-    params = pika.ConnectionParameters(host=host, port=port)
-    connection = pika.BlockingConnection(params)
-    channel = connection.channel()
-    channel.exchange_declare(exchange='snapshots', exchange_type='fanout')
-    channel.basic_publish(exchange='snapshots',
-                          routing_key='', body=json.dumps(snapshot))
-    connection.close()
-
-
 def run_server_with_queue(url, *, host='127.0.0.1', port=8000, path='data'):
-    '''run the server with message queue
-    supports rabbitmq as a message queue.
+    '''run the server with message queue from mq_drivers.
 
     Arguments:
         url {str} -- message queue url
@@ -129,5 +108,6 @@ def run_server_with_queue(url, *, host='127.0.0.1', port=8000, path='data'):
         port {int} -- server port (default: {8000})
         path {str} -- directory for blob storage (default: {'data'})
     '''
-    publish = ft.partial(publish_to_queue, url=url)
+    publisher_class = mq_drivers[furl.furl(url).scheme]['publisher']
+    publish = publisher_class(url, 'snapshots', 'fanout', '').publish
     run_server(host=host, port=port, publish=publish, path=path)

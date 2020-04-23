@@ -1,17 +1,28 @@
+"""A saver to save messages from the message queue to the database
+"""
 import brainstorm.database_drivers as db_drivers
-import click
+import brainstorm.mq_drivers as mq_drivers
 import datetime as dt
 import furl
 import json
-import pika
 
 
 class Saver:
+
     def __init__(self, database_url):
+        """
+        Args:
+            database_url (str): the url of the database
+        """
         driver = furl.furl(database_url).scheme
         self.db = db_drivers[driver](database_url)
 
-    def save(self, field, data):
+    def save(self, data):
+        """Save data to the savers database
+        
+        Args:
+            data (str): data in json format
+        """
         snapshot = json.loads(data)
         user = snapshot['user']
         del snapshot['user']
@@ -22,47 +33,28 @@ class Saver:
         self.db.save_snapshot(snapshot)
 
 
-@click.group()
-def saver_cli():
-    pass
-
-
-@saver_cli.command('save')
-@click.option('database_url', '-d', '--database',
-              default='mongodb://localhost:27017/', show_default=True)
-@click.argument('field')
-@click.argument('path')
-def save_from_path(database_url, field, path):
+def save_from_path(database_url, path):
+    """Save data in path to database in given url
+    
+    Args:
+        database_url (str): the url of the database
+        path (str): path to a file with json format content
+    """
     with open(path, 'r') as f:
         data = f.read()
     saver = Saver(database_url)
-    saver.save(field, data)
+    saver.save(data)
 
 
-@saver_cli.command()
-@click.argument('database_url')
-@click.argument('mq_url')
 def run_saver(database_url, mq_url):
+    """Run the saver to save mwssages from message queue.
+    Saver saves all messages in 'data' topic exchange.
+    
+    Args:
+        database_url (str): url of the database
+        mq_url (str): url of the message queue
+    """
     saver = Saver(database_url)
-    mq_url = furl.furl(mq_url)
-    mq_host = mq_url.host
-    mq_port = mq_url.port
-    params = pika.ConnectionParameters(host=mq_host, port=mq_port)
-    connection = pika.BlockingConnection(params)
-    channel = connection.channel()
-    channel.exchange_declare(exchange='data', exchange_type='topic')
-    channel.queue_declare(queue='save')
-    channel.queue_bind(exchange='data',
-                       queue='save', routing_key='#')
-    channel.basic_qos(prefetch_count=1)
-
-    def callback(channel, method, properties, data):
-        saver.save(method.routing_key, data)
-        channel.basic_ack(delivery_tag=method.delivery_tag)
-
-    channel.basic_consume(queue='save', on_message_callback=callback)
-    channel.start_consuming()
-
-
-if __name__ == '__main__':
-    saver_cli()
+    consumer_class = mq_drivers[furl.furl(mq_url).scheme]['consumer']
+    consumer = consumer_class(mq_url, 'data', 'topic')
+    consumer.consume('save', saver.save, routing_key='#')

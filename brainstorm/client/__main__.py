@@ -1,4 +1,7 @@
+import blessings
 import click
+import sys
+import traceback
 
 from brainstorm.client.client import upload_sample
 from brainstorm.client.reader import Reader
@@ -38,8 +41,9 @@ def read(path, driver='protobuf'):
 @click.option('reader_driver', '-rd', '--reader-driver',
               default='protobuf', show_default=True)
 @click.argument('path')
+@click.option('tb', '-t', '--traceback', is_flag=True, default=False, show_default=True)
 def cli_upload_sample(path, *, host='127.0.0.1', port=8000,
-                      reader_driver='protobuf'):
+                      reader_driver='protobuf', tb=False):
     '''Upload a sample in given path to the server
     The snapshots are POSTed to http://host:port/snapshot in bson format
 
@@ -52,11 +56,19 @@ def cli_upload_sample(path, *, host='127.0.0.1', port=8000,
         reader_driver {str} -- a driver for the sample reader
                                (from brainstorm.reader_drivers)
                                (default: {'protobuf'})
-
-    Raises:
-        ConnectionError -- when communication to the server fails
     '''
-    upload_sample(path=path, host=host, port=port, reader_driver=reader_driver)
+    try:
+        upload_sample(path=path, host=host, port=port, reader_driver=reader_driver)
+    except Exception as e:
+        track = traceback.format_exc()
+        t = blessings.Terminal()
+        if tb:
+            click.echo(t.red(track))
+        else:
+            click.echo(t.red(f'Failed with exception {type(e).__name__}: \n{e}'))
+        sys.exit(1)
+
+
 
 if __name__ == '__main__':
     client_cli()
