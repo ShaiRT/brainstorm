@@ -7,70 +7,16 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   brainstorm.reader_drivers
+   brainstorm.client
+   brainstorm.server
+   brainstorm.mq_drivers
    brainstorm.parsers
-   brainstorm.utils
-
-Submodules
-----------
-
-brainstorm.api module
----------------------
-
-.. automodule:: brainstorm.api
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-brainstorm.cleanup module
--------------------------
-
-.. automodule:: brainstorm.cleanup
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-brainstorm.cli module
----------------------
-
-.. automodule:: brainstorm.cli
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-brainstorm.client module
-------------------------
-
-.. automodule:: brainstorm.client
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. autofunction:: upload_sample
-
-brainstorm.mongodb\_driver module
----------------------------------
-
-.. automodule:: brainstorm.mongodb_driver
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-brainstorm.saver module
------------------------
-
-.. automodule:: brainstorm.saver
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-brainstorm.server module
-------------------------
-
-.. automodule:: brainstorm.server
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
+   brainstorm.database_drivers
+   brainstorm.saver
+   brainstorm.api
+   brainstorm.cli
+   brainstorm.gui
 
 Module contents
 ---------------

@@ -95,6 +95,6 @@ def run_parser(name, url):
         publisher = publisher_class(url, 'data', 'topic', name)
         publisher.publish(parsed_data)
 
-    consumer_class = mq_drivers[furl.furl(url).scheme]['consumer']
-    consumer = consumer_class(url, 'snapshots', 'fanout')
-    consumer.consume(name, callback)
+    subscriber_class = mq_drivers[furl.furl(url).scheme]['subscriber']
+    subscriber = subscriber_class(url, 'snapshots', 'fanout')
+    subscriber.subscribe(name, callback)

@@ -59,6 +59,14 @@ def mongo():
         os.system('docker stop test_mongo')
 
 
+
+
+@pytest.fixture
+def rabbitmq_url():
+    return 'rabbitmq://127.0.0.1:9877'
+
+
+'''
 @pytest.fixture(scope='module')
 def rabbitmq():
     if not is_travis:
@@ -66,3 +74,4 @@ def rabbitmq():
     yield 'rabbitmq://127.0.0.1:5672'
     if not is_travis:
         os.system('docker stop test_rabbitmq')
+'''

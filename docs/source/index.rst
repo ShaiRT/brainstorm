@@ -11,8 +11,8 @@ Welcome to brainstorm's documentation!
    :caption: Contents:
 
    brainstorm
-   parsers
-   utils
+
+   
 
 Indices and tables
 ==================

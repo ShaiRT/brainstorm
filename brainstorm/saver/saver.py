@@ -55,6 +55,6 @@ def run_saver(database_url, mq_url):
         mq_url (str): url of the message queue
     """
     saver = Saver(database_url)
-    consumer_class = mq_drivers[furl.furl(mq_url).scheme]['consumer']
-    consumer = consumer_class(mq_url, 'data', 'topic')
-    consumer.consume('save', saver.save, routing_key='#')
+    subscriber_class = mq_drivers[furl.furl(mq_url).scheme]['subscriber']
+    subscriber = subscriber_class(mq_url, 'data', 'topic')
+    subscriber.subscribe('save', saver.save, routing_key='#')
