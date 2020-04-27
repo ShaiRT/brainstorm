@@ -17,13 +17,18 @@ def test_import():
 
 
 @pytest.fixture(scope='module')
-def test_db(mongo):
-	return db_drivers['mongodb'](mongo)
+def mongo_url():
+    yield 'mongodb://127.0.0.1:9867'
 
 
 @pytest.fixture(scope='module')
-def mongo_db(mongo):
-	return pymongo.MongoClient(mongo).brainstorm
+def test_db(mongo_url):
+	return db_drivers['mongodb'](mongo_url)
+
+
+@pytest.fixture(scope='module')
+def mongo_db(mongo_url):
+	return pymongo.MongoClient(mongo_url).brainstorm
 
 
 def test_save_user(mongo_db, test_db, user):

@@ -17,7 +17,7 @@ def gui_cli():
 @click.option('api_host', '-H', '--api-host', default='127.0.0.1', show_default=True)
 @click.option('api_port', '-P', '--api-port', default=5000, show_default=True)
 @click.option('tb', '-t', '--traceback', is_flag=True, default=False, show_default=True)
-def cli_run_server(host='127.0.0.1', port=8000, api_host='127.0.0.1', api_port=5000, tb=False):
+def cli_run_server(host='127.0.0.1', port=8080, api_host='127.0.0.1', api_port=5000, tb=False):
     try:
         run_server(host=host, port=port, api_host=api_host, api_port=api_port)
     except Exception as e:

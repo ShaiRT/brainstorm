@@ -1,0 +1,94 @@
+version: '3'
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    ports:
+      - 5672:5672
+      - 15672:15672
+  
+  mongodb:
+    image: mongo
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodb_data:/data/db
+  
+  server:
+    image: brainstorm
+    build: .
+    depends_on: 
+      - rabbitmq
+    ports:
+      - 8000:8000
+    volumes:
+      - blobstore:/data
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.server run-server rabbitmq://rabbitmq:5672 -h 0.0.0.0
+  
+  color_image_parser:
+    image: brainstorm
+    depends_on: 
+      - server
+      - rabbitmq
+    volumes:
+      - blobstore:/data
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser color_image rabbitmq://rabbitmq:5672
+  
+  depth_image_parser:
+    image: brainstorm
+    depends_on: 
+      - server
+      - rabbitmq
+    volumes:
+      - blobstore:/data
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser depth_image rabbitmq://rabbitmq:5672
+  
+  feelings_parser:
+    image: brainstorm
+    depends_on: 
+      - server
+      - rabbitmq
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser feelings rabbitmq://rabbitmq:5672
+  
+  pose_parser:
+    image: brainstorm
+    depends_on: 
+      - server
+      - rabbitmq
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser pose rabbitmq://rabbitmq:5672
+  
+  saver:
+    image: brainstorm
+    depends_on: 
+      - server
+      - rabbitmq
+      - mongodb
+    volumes:
+      - blobstore:/data
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.saver run-saver mongodb://mongodb:27017 rabbitmq://rabbitmq:5672
+  
+  api:
+    image: brainstorm
+    depends_on: 
+      - server
+      - mongodb
+    ports:
+      - 5000:5000
+    volumes:
+      - blobstore:/data
+    command: python3.8 -m brainstorm.api run-server -d mongodb://mongodb:27017 -h 0.0.0.0
+  
+  gui:
+    image: brainstorm
+    depends_on:
+      - server
+      - api
+    ports:
+      - 8080:8080
+    volumes:
+      - blobstore:/data
+    command: python3.8 -m brainstorm.gui run-server -h 0.0.0.0 -H api
+
+volumes:
+  mongodb_data:
+  blobstore:

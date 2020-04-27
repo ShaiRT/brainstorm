@@ -1,2 +1,2 @@
-from brainstorm.client.client import upload_sample
-from brainstorm.client.reader import Reader
+from .client import upload_sample
+from .reader import Reader

@@ -1,0 +1,10 @@
+.git
+data
+sample.mind.gz
+sample.mind
+docs
+README.md
+tests
+.env
+.pytest_cache
+.coverage

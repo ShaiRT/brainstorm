@@ -4,7 +4,7 @@ import bson
 import furl
 import requests
 
-import brainstorm.client.reader as reader
+from . import reader
 
 
 def upload_sample(path, host='127.0.0.1', port=8000, reader_driver='protobuf'):

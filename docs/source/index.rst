@@ -1,22 +1,7 @@
-.. brainstorm documentation master file, created by
-   sphinx-quickstart on Sat Apr 11 20:32:46 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Welcome to brainstorm's documentation!
-======================================
+BrainStorm
+==========
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 4
 
    brainstorm
-
-   
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`

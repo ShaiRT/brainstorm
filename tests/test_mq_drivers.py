@@ -19,6 +19,11 @@ def test_import():
 
 
 @pytest.fixture
+def rabbitmq_url():
+    return 'rabbitmq://127.0.0.1:9877'
+
+
+@pytest.fixture
 def connection_params(rabbitmq_url):
     url = furl.furl(rabbitmq_url)
     return pika.ConnectionParameters(host=url.host, port=url.port)
