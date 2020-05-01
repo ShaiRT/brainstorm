@@ -32,7 +32,7 @@ services:
       - rabbitmq
     volumes:
       - blobstore:/data
-    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser color_image rabbitmq://rabbitmq:5672
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parsers run-parser color_image rabbitmq://rabbitmq:5672
   
   depth_image_parser:
     image: brainstorm
@@ -41,21 +41,21 @@ services:
       - rabbitmq
     volumes:
       - blobstore:/data
-    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser depth_image rabbitmq://rabbitmq:5672
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parsers run-parser depth_image rabbitmq://rabbitmq:5672
   
   feelings_parser:
     image: brainstorm
     depends_on: 
       - server
       - rabbitmq
-    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser feelings rabbitmq://rabbitmq:5672
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parsers run-parser feelings rabbitmq://rabbitmq:5672
   
   pose_parser:
     image: brainstorm
     depends_on: 
       - server
       - rabbitmq
-    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parser run-parser pose rabbitmq://rabbitmq:5672
+    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.parsers run-parser pose rabbitmq://rabbitmq:5672
   
   saver:
     image: brainstorm
@@ -87,7 +87,7 @@ services:
       - 8080:8080
     volumes:
       - blobstore:/data
-    command: python3.8 -m brainstorm.gui run-server -h 0.0.0.0 -H api
+    command: python3.8 -m brainstorm.gui run-server -h 0.0.0.0
 
 volumes:
   mongodb_data:
