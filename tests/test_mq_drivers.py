@@ -4,6 +4,9 @@ import inspect
 import json
 import pika
 import pytest
+import threading
+import time
+import os
 
 
 def test_import():
@@ -29,12 +32,30 @@ def connection_params(rabbitmq_url):
     return pika.ConnectionParameters(host=url.host, port=url.port)
 
 
+def test_wait_for_connection(connection_params):
+    fail = True
+    while fail:
+        try:
+            pika.BlockingConnection(connection_params)
+            fail = False
+        except pika.exceptions.IncompatibleProtocolError:
+            pass
+
+    connection = pika.BlockingConnection(connection_params)
+    channel = connection.channel()
+    channel.exchange_declare(exchange='test', exchange_type='fanout')
+    channel.queue_declare(queue='test')
+    channel.queue_bind(exchange='test', queue='test', routing_key='test')
+    channel.close()
+    connection.close()
+
+
 def test_publisher(rabbitmq_url, user, connection_params):
     publisher_class = mq_drivers['rabbitmq']['publisher']
     publisher = publisher_class(rabbitmq_url, 'test', 'fanout', 'test')
     user['birthday'] = user['birthday'].timestamp()
     publisher.publish(json.dumps(user))
-    
+
     connection = pika.BlockingConnection(connection_params)
     channel = connection.channel()
     channel.exchange_declare(exchange='test', exchange_type='fanout')
