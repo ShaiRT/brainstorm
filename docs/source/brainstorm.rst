@@ -1,9 +1,6 @@
 brainstorm package
 ==================
 
-.. mdinclude:: ../../README.md
-
-
 Subpackages
 -----------
 

@@ -15,12 +15,7 @@ def parsers_cli():
 @click.argument('name')
 @click.argument('path')
 def cli_parse(name, path):
-    """parse snapshot data in given path
-    and print result
-    
-    Args:
-        name (str): the name of the parser to be used
-        path (str): the path of data to be parsed
+    """parse snapshot data in given path with parser with given name and print result
     """
     click.echo(parse_path(name, path))
 
@@ -29,14 +24,9 @@ def cli_parse(name, path):
 @click.argument('name')
 @click.argument('url')
 def cli_run_parser(name, url):
-    """run parser to listen to message queue, parse data,
-    and post back to 'data' topic exchange of the 
+    """run parser with given name to listen to message queue in given url,
+    parse data, and post back to 'data' topic exchange of the 
     message queue with routing_key=name.
-    **supports rabbitmq as a message queue
-    
-    Args:
-        name (str): name of the parser to be used
-        url (str): url of the message queue
     """
     run_parser(name, url)
 

@@ -13,9 +13,11 @@ def cli():
 
 
 @cli.command()
-@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
-@click.option('port', '-p', '--port', default=5000, show_default=True)
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
+@click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
 def get_users(host='127.0.0.1', port=5000):
+    '''Print a list of IDs and names of all supported users.
+    '''
     url = furl.furl(scheme='http', host=host, port=port, path='users').url
     response = requests.get(url)
     users = response.json()
@@ -29,9 +31,11 @@ def get_users(host='127.0.0.1', port=5000):
 
 @cli.command()
 @click.argument('user_id')
-@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
-@click.option('port', '-p', '--port', default=5000, show_default=True)
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
+@click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
 def get_user(user_id, host='127.0.0.1', port=5000):
+    '''Print the specified user’s details: ID, name, birthday and gender.
+    '''
     url = furl.furl(scheme='http', host=host, port=port)
     url.path.segments = ['users', user_id]
     response = requests.get(url.url)
@@ -45,9 +49,11 @@ def get_user(user_id, host='127.0.0.1', port=5000):
 
 @cli.command('get-snapshots')
 @click.argument('user_id')
-@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
-@click.option('port', '-p', '--port', default=5000, show_default=True)
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
+@click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
 def get_user_snapshots(user_id, host='127.0.0.1', port=5000):
+    '''Print a list of the specified user’s snapshot IDs and datetimes.
+    '''
     url = furl.furl(scheme='http', host=host, port=port)
     url.path.segments = ['users', user_id, 'snapshots']
     response = requests.get(url.url)
@@ -63,9 +69,11 @@ def get_user_snapshots(user_id, host='127.0.0.1', port=5000):
 @cli.command()
 @click.argument('user_id')
 @click.argument('snapshot_id')
-@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
-@click.option('port', '-p', '--port', default=5000, show_default=True)
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
+@click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
 def get_snapshot(user_id, snapshot_id, host='127.0.0.1', port=5000):
+    '''Print the specified snapshot’s details: ID, datetime, and the available results’ names.
+    '''
     url = furl.furl(scheme='http', host=host, port=port)
     url.path.segments = ['users', user_id, 'snapshots', snapshot_id]
     response = requests.get(url.url)
@@ -81,10 +89,13 @@ def get_snapshot(user_id, snapshot_id, host='127.0.0.1', port=5000):
 @click.argument('user_id')
 @click.argument('snapshot_id')
 @click.argument('result_name')
-@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True)
-@click.option('port', '-p', '--port', default=5000, show_default=True)
+@click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
+@click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
 @click.option('path', '-s', '--save', default=None)
 def get_snapshot_result(user_id, snapshot_id, result_name, host='127.0.0.1', port=5000, path=None):
+    '''Print the specified snapshot’s result (if available).
+    When given a path, the result is saved to the path in json format instead of being printed.
+    '''
     url = furl.furl(scheme='http', host=host, port=port)
     url.path.segments = ['users', user_id,
                          'snapshots', snapshot_id, result_name]

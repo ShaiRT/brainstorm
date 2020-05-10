@@ -43,6 +43,15 @@ def static_file(path):
 
 
 def run_server(host='127.0.0.1', port=8080, api_host='127.0.0.1', api_port=5000):
+    '''Run the gui server at 'http:host:port'
+    The gui server displays the information exposed by the api server.
+    
+    Keyword Arguments:
+        host {str} -- the gui server host (default: {'127.0.0.1'})
+        port {number} -- the gui server port (default: {8080})
+        api_host {str} -- the api server host (default: {'127.0.0.1'})
+        api_port {number} -- the api server port (default: {5000})
+    '''
     global gui_server
     api_url = furl.furl(host=api_host, port=api_port, scheme='http').url
     gui_server.config['api_url'] = api_url

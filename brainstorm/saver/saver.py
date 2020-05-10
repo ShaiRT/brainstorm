@@ -47,8 +47,8 @@ def save_from_path(database_url, path):
 
 
 def run_saver(database_url, mq_url):
-    """Run the saver to save messages from message queue.
-    Saver saves all messages in 'data' topic exchange.
+    """Run the saver to save messages from message queue to database.
+    The saver saves all messages received in 'data' topic exchange.
     
     Args:
         database_url (str): url of the database

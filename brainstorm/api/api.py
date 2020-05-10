@@ -94,6 +94,13 @@ def get_result_data(user_id, snapshot_id, result_name):
 
 
 def run_api_server(host='127.0.0.1', port=5000, database_url='mongodb://localhost:27017'):
+    '''Run the api server to respond to http requests at 'http://host:port' and expose the data in the database.
+    
+    Keyword Arguments:
+        host {str} -- the servers host (default: {'127.0.0.1'})
+        port {number} -- the servers port (default: {5000})
+        database_url {str} -- the url of the database (default: {'mongodb://localhost'})
+    '''
     global api_server
     api_server.config['db'] = db_drivers[furl.furl(database_url).scheme](database_url)
     api_server.run(host=host, port=port, debug=False, threaded=True)
