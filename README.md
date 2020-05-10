@@ -60,7 +60,7 @@ This will also activate a `brainstorm.saver` and the following parsers:
 - feelings parser
 - pose parser
 
-See [client](####Client) to learn about uploading data to the server, and [cli](####Cli) to learn how to access the information via command line.
+See [client](#Client) to learn about uploading data to the server, and [cli](#Cli) to learn how to access the information via command line.
 
 ### Command Line Interface
 
