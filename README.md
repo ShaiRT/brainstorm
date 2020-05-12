@@ -8,6 +8,41 @@ Brain computer interface project for advanced system design course in TAU.
 
 See API documentation [here](https://brainstormproject.readthedocs.io/en/latest/).
 
+## Overview
+
+This project includes a [client](#Client), which streams cognition snapshots to a [server](#Server), which then publishes them to a [message queue](#Message-Queue), where multiple [parsers](#Parsers) read the snapshot, parse various parts of it, and publish the parsed results, which are then [saved](#Saver) to a [database](#Database).
+
+The results are then exposed via a RESTful [API](#API), which is consumed by a [CLI](#CLI); there's also a [GUI](#GUI), which visualizes the results in various ways.
+
+```mermaid
+graph LR
+A((client)) --> B((server))
+style A fill:#d40
+style B fill:#499
+subgraph docker
+  B --> C(message queue)
+  style C fill:#fd0
+  D{parser} --- C
+  E{parser} --- C
+  F{parser} --- C
+  G{parser} --- C
+  style D fill:#999
+  style E fill:#999
+  style F fill:#999
+  style G fill:#999
+  C --> H{saver}
+  style H fill:#999
+  H --> I[database]
+  style I fill:#fd0
+  J((API)) --> I
+  style J fill:#bbf
+  K((GUI)) --> J
+  style K fill:#190
+end
+L((CLI)) --> J
+style L fill:#190
+```
+
 ## Installation
 
 1. Clone the repository and enter it:
@@ -29,7 +64,6 @@ See API documentation [here](https://brainstormproject.readthedocs.io/en/latest/
 
 3. To check that everything is working as expected, run the tests:
 
-
     ```sh
     $ ./scripts/run-tests.sh
     ...
@@ -45,11 +79,11 @@ $ ./run-pipeline.sh
 ```
 This will run the follwing services on a [Docker]([https://www.docker.com/](https://www.docker.com/)) host:
 
-|program   |host         |port|protocol|package            |
-|----------|-------------|----|:--------:|-----------------|
-|server    |0 . 0 . 0 . 0|8000|http    |`brainstorm.server`|
-|api server|0 . 0 . 0 . 0|5000|http    |`brainstorm.api`   |
-|gui server|0 . 0 . 0 . 0|8080|http    |`brainstorm.gui`   |
+|program   |host         |port|protocol  |package            |
+|----------|-------------|----|:--------:|-------------------|
+|server    |0 . 0 . 0 . 0|8000|http      |`brainstorm.server`|
+|api server|0 . 0 . 0 . 0|5000|http      |`brainstorm.api`   |
+|gui server|0 . 0 . 0 . 0|8080|http      |`brainstorm.gui`   |
 
 > Note: this will also run docker containers with [rabbitmq](https://www.rabbitmq.com/) on 0.0.0.0:5672, and [mogodb](https://www.mongodb.com/) on 0.0.0.0:27017.
 
@@ -60,7 +94,7 @@ This will also activate a `brainstorm.saver` and the following parsers:
 - feelings parser
 - pose parser
 
-See [client](#Client) to learn about uploading data to the server, and [cli](#Cli) to learn how to access the information via command line.
+See [Client](#Client) to learn about uploading data to the server, and [CLI](#CLI) to learn how to access the information via command line.
 
 ### Command Line Interface
 
@@ -117,7 +151,12 @@ Options:
   --help              Show this message and exit.
 ```
  
- #### Parsers
+#### Message Queue
+
+Various parts of this project use a message queue to publish and consume information.
+The current implementation support [RabbitMQ](https://www.rabbitmq.com/) as a message queue.
+
+#### Parsers
 
 `brainstorm.parsers` provides the following command line interface:
 ```
@@ -168,7 +207,12 @@ Options:
   --help  Show this message and exit.
 ```
 
-#### Api
+#### Database
+
+Various parts of this project use a database to save and read information.
+The current implementation support [MongoDB](https://www.mongodb.com/) as a message queue.
+
+#### API
 
 To run `brainstorm.api` simply use
 ```
@@ -206,7 +250,7 @@ The api server will respond to the following requests:
   Returns the specified snapshot's result data (i.e. image).
   Supported results: color_image, depth_image (if available).
 
-#### Cli
+#### CLI
 
 The cli is available via `brainstorm.cli` and supports the following commands:
 ```
