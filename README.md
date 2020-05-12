@@ -14,34 +14,6 @@ This project includes a [client](#Client), which streams cognition snapshots to 
 
 The results are then exposed via a RESTful [API](#API), which is consumed by a [CLI](#CLI); there's also a [GUI](#GUI), which visualizes the results in various ways.
 
-```mermaid
-graph LR
-A((client)) --> B((server))
-style A fill:#d40
-style B fill:#499
-subgraph docker
-  B --> C(message queue)
-  style C fill:#fd0
-  D{parser} --- C
-  E{parser} --- C
-  F{parser} --- C
-  G{parser} --- C
-  style D fill:#999
-  style E fill:#999
-  style F fill:#999
-  style G fill:#999
-  C --> H{saver}
-  style H fill:#999
-  H --> I[database]
-  style I fill:#fd0
-  J((API)) --> I
-  style J fill:#bbf
-  K((GUI)) --> J
-  style K fill:#190
-end
-L((CLI)) --> J
-style L fill:#190
-```
 
 ## Installation
 
