@@ -3,7 +3,7 @@ import click
 import sys
 import traceback
 
-from brainstorm.server.server import run_server_with_queue
+from .server import run_server_with_queue
 
 
 @click.group()

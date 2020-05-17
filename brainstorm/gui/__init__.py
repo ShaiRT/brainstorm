@@ -1,1 +1,1 @@
-from brainstorm.gui.gui_server import run_server
+from .gui_server import run_server

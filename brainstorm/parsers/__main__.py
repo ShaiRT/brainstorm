@@ -3,7 +3,7 @@ import functools as ft
 import furl
 import pika
 
-from brainstorm.parsers.__init__ import parse, parse_path, run_parser
+from . import parse, parse_path, run_parser
 
 
 @click.group()

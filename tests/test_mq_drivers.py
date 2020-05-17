@@ -4,9 +4,6 @@ import inspect
 import json
 import pika
 import pytest
-import threading
-import time
-import os
 
 
 def test_import():
@@ -17,7 +14,7 @@ def test_import():
         assert type(classes) == dict
         for name, clss in classes.items():
             assert inspect.isclass(clss)
-            assert clss.__name__ is 'Publisher' or clss.__name__ is 'Subscriber'
+            assert clss.__name__ == 'Publisher' or clss.__name__ == 'Subscriber'
             assert name == clss.__name__.lower()
 
 

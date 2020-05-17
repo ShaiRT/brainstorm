@@ -8,7 +8,6 @@ from brainstorm.parsers.__main__ import parsers_cli
 from click.testing import CliRunner
 
 
-
 def test_import():
     """Test the dynamic importing of the module
     """
@@ -67,9 +66,9 @@ def mock_my_parser(monkeypatch):
 
 def test_parse_fail(mock_my_parser):
     result = parsers.parse('not_a_parser', json.dumps({'a': 1}))
-    assert result == None
+    assert result is None
     result = parsers.parse('my_parser', json.dumps({'a': 1}))
-    assert result == None
+    assert result is None
 
 
 def test_parse_path(mock_my_parser, tmp_path):
@@ -83,7 +82,3 @@ def test_cli_parse_missing_argument():
     runner = CliRunner()
     result = runner.invoke(parsers_cli, ['parse'])
     assert 'Missing argument' in result.output
-
-
-# TODO: add message queue and cli testing
-

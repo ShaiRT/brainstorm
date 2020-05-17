@@ -25,11 +25,13 @@ def mock_reader(user, snapshot, monkeypatch):
 
 def mock_post(url, data, headers):
     mock_requests.data = data
+
     class Response:
         status_code = 200
 
         def close(self):
             pass
+
     return Response()
 
 
@@ -53,21 +55,21 @@ def test_snapshot(mock_reader, mock_requests, user, snapshot):
 
 
 def test_cli_missing_argument():
-  runner = CliRunner()
-  result = runner.invoke(client_cli, ['upload-sample'])
-  assert 'Missing argument' in result.output
+    runner = CliRunner()
+    result = runner.invoke(client_cli, ['upload-sample'])
+    assert 'Missing argument' in result.output
 
 
 def test_cli_user(mock_reader, mock_requests, user):
     runner = CliRunner()
-    result = runner.invoke(client_cli, ['upload-sample', '.'])
+    runner.invoke(client_cli, ['upload-sample', '.'])
     recieved_snapshot = bson.decode(mock_requests.data)
     assert recieved_snapshot['user'] == user
 
 
 def test_cli_snapshot(mock_reader, mock_requests, user, snapshot):
     runner = CliRunner()
-    result = runner.invoke(client_cli, ['upload-sample', '.'])
+    runner.invoke(client_cli, ['upload-sample', '.'])
     recieved_snapshot = bson.decode(mock_requests.data)
     del recieved_snapshot['user']
     assert recieved_snapshot == snapshot

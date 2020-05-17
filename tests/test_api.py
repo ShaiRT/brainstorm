@@ -6,12 +6,16 @@ import copy
 class MockDB:
     def get_users(self):
         return [self.user]
+
     def get_user(self, user_id):
         return self.user
+
     def get_snapshots(self, user_id):
         return [self.snapshot]
+
     def get_snapshot(self, user_id, snapshot_id):
         return self.snapshot
+
     def get_result(self, user_id, snapshot_id, result):
         if result == 'fail':
             return None
@@ -39,7 +43,7 @@ def test_get_user(mock_db, user):
     user['birthday'] = user['birthday'].strftime('%B %e, %Y')
     assert response.status_code == 200
     assert response.json == user
-    
+
 
 def test_get_snapshots(mock_db, snapshot_no_blobs):
     response = api_server.test_client().get('/users/12/snapshots')
@@ -71,7 +75,7 @@ def test_get_result_color_image(mock_db, snapshot_no_blobs):
     color_image['data_url'] = '/users/12/snapshots/1/color_image/data'
     assert response.status_code == 200
     assert snapshot_no_blobs['color_image'] == response.json
-    
+
 
 def test_get_result_fail(mock_db):
     response = api_server.test_client().get('/users/12/snapshots/1/fail')

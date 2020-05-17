@@ -1,6 +1,6 @@
 """A snapshot depth image parser
 """
-import matplotlib as mpl
+import matplotlib.image as mpl_image
 import numpy as np
 
 # from matplotlib import pyplot as plt
@@ -25,7 +25,7 @@ def parse_depth_image(snapshot):
     with open(image_info['path'], 'rb') as f:
         data_array = np.frombuffer(f.read(), '<f')
     pic = np.reshape(data_array, image_size)
-    mpl.image.imsave(image_path, pic, cmap='plasma')
+    mpl_image.imsave(image_path, pic, cmap='plasma')
     '''
     figure, ax = plt.subplots() # fig = plt.figure()?
     ax.imshow(pic, cmap='plasma')

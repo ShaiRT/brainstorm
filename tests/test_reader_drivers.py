@@ -1,9 +1,7 @@
 import PIL.Image
 import brainstorm.reader_drivers as drivers
-import datetime as dt
 import google.protobuf.json_format as pb_json
 import inspect
-import json
 import numpy as np
 import pytest
 import stringcase as sc
@@ -11,7 +9,6 @@ import struct
 
 from brainstorm.reader_drivers.sample_pb2 import Snapshot
 from brainstorm.reader_drivers.sample_pb2 import User
-from pathlib import Path
 
 
 def test_import():
@@ -43,7 +40,6 @@ def generate_binary_sample(user, snapshot):
     return b''.join(sample)
 
 
-
 def generate_protobuf_sample(user, snapshot):
     tmp_user = dict(user)
     tmp_snapshot = dict(snapshot)
@@ -63,7 +59,7 @@ def generate_protobuf_sample(user, snapshot):
     pb_snapshot = pb_json.ParseDict(tmp_snapshot, pb_snapshot, ignore_unknown_fields=True)
 
     pb_snapshot.color_image.data = snapshot['color_image']['data']
-    pb_snapshot.depth_image.data[:] = np.frombuffer(snapshot['depth_image']['data'],'f')
+    pb_snapshot.depth_image.data[:] = np.frombuffer(snapshot['depth_image']['data'], 'f')
     user_bytes = pb_user.SerializeToString()
 
     snapshot_bytes = pb_snapshot.SerializeToString()
@@ -73,8 +69,8 @@ def generate_protobuf_sample(user, snapshot):
 
 
 @pytest.mark.parametrize('generate, driver', [
-    (generate_binary_sample,'binary'),
-    (generate_protobuf_sample,'protobuf'),
+    (generate_binary_sample, 'binary'),
+    (generate_protobuf_sample, 'protobuf'),
     ])
 def test_driver(generate, driver, tmp_path, user, snapshot):
     path = tmp_path / 'sample.mind'

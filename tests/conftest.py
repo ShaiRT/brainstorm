@@ -5,7 +5,6 @@ import datetime as dt
 from pathlib import Path
 import inspect
 import PIL.Image
-import pika
 
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -33,10 +32,10 @@ def snapshot_no_blobs():
                         'exhaustion': -0.5,
                         'happiness': 1}
     my_dir = Path(inspect.getsourcefile(lambda: 0)).absolute().parent
-    depth_image = PIL.Image.open(my_dir /'my_snapshot_heatmap.jpg').convert('F')
-    color_image = PIL.Image.open(my_dir /'my_snapshot_image.jpg')
-    snap['depth_image'] = {'width': depth_image.width,'height': depth_image.height}
-    snap['color_image'] = {'width': color_image.width,'height': color_image.height}
+    depth_image = PIL.Image.open(my_dir / 'my_snapshot_heatmap.jpg').convert('F')
+    color_image = PIL.Image.open(my_dir / 'my_snapshot_image.jpg')
+    snap['depth_image'] = {'width': depth_image.width, 'height': depth_image.height}
+    snap['color_image'] = {'width': color_image.width, 'height': color_image.height}
     return snap
 
 
@@ -44,8 +43,8 @@ def snapshot_no_blobs():
 def snapshot(snapshot_no_blobs):
     snap = snapshot_no_blobs
     my_dir = Path(inspect.getsourcefile(lambda: 0)).absolute().parent
-    depth_image = PIL.Image.open(my_dir /'my_snapshot_heatmap.jpg').convert('F')
-    color_image = PIL.Image.open(my_dir /'my_snapshot_image.jpg')
+    depth_image = PIL.Image.open(my_dir / 'my_snapshot_heatmap.jpg').convert('F')
+    color_image = PIL.Image.open(my_dir / 'my_snapshot_image.jpg')
     snap['depth_image']['data'] = depth_image.tobytes()
     snap['color_image']['data'] = color_image.tobytes()
     return snap

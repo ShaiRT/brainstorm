@@ -1,4 +1,5 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages
+from setuptools import setup
 
 
 setup(
@@ -7,6 +8,19 @@ setup(
     author = 'Shai Rahat',
     description = 'Brain computer interface.',
     packages = find_packages(),
-    install_requires = ['click', 'flask'],
+    install_requires = ['click', 
+                        'flask', 
+                        'Pillow', 
+                        'blessings', 
+                        'Flask-Cors', 
+                        'furl', 
+                        'matplotlib',
+                        'numpy',
+                        'pika',
+                        'prettytable-extras',
+                        'protobuf',
+                        'pymongo',
+                        'requests',
+                        'stringcase'],
     tests_require = ['pytest', 'pytest-cov'],
 )

@@ -10,6 +10,7 @@ function main {
     .env/bin/pip install -U pip
     .env/bin/pip install -r requirements.txt
     sudo npm install ./brainstorm/gui/gui-app
+    npm run --prefix ./brainstorm/gui/gui-app build
 }
 
 

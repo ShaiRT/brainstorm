@@ -3,8 +3,11 @@ import click
 import furl
 import json
 import requests
+import sys
+import traceback
 
 from prettytable_extras import PrettyTable
+from functools import wraps
 
 
 @click.group()
@@ -12,9 +15,28 @@ def cli():
     pass
 
 
+def perror(f):
+    @click.option('tb', '-t', '--traceback', is_flag=True, default=False, show_default=True,
+                  help='show full traceback on failure')
+    @wraps(f)
+    def wrapper(tb=False, *args, **kwargs):
+        try:
+            f(*args, **kwargs)
+        except Exception as e:
+            t = blessings.Terminal()
+            if tb:
+                track = traceback.format_exc()
+                click.echo(t.red(track))
+            else:
+                click.echo(t.red(f'Failed with exception {type(e).__name__}: \n{e}'))
+            sys.exit(1)
+    return wrapper
+
+
 @cli.command()
 @click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
 @click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
+@perror
 def get_users(host='127.0.0.1', port=5000):
     '''Print a list of IDs and names of all supported users.
     '''
@@ -33,6 +55,7 @@ def get_users(host='127.0.0.1', port=5000):
 @click.argument('user_id')
 @click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
 @click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
+@perror
 def get_user(user_id, host='127.0.0.1', port=5000):
     '''Print the specified user’s details: ID, name, birthday and gender.
     '''
@@ -51,6 +74,7 @@ def get_user(user_id, host='127.0.0.1', port=5000):
 @click.argument('user_id')
 @click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
 @click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
+@perror
 def get_user_snapshots(user_id, host='127.0.0.1', port=5000):
     '''Print a list of the specified user’s snapshot IDs and datetimes.
     '''
@@ -71,6 +95,7 @@ def get_user_snapshots(user_id, host='127.0.0.1', port=5000):
 @click.argument('snapshot_id')
 @click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
 @click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
+@perror
 def get_snapshot(user_id, snapshot_id, host='127.0.0.1', port=5000):
     '''Print the specified snapshot’s details: ID, datetime, and the available results’ names.
     '''
@@ -91,7 +116,8 @@ def get_snapshot(user_id, snapshot_id, host='127.0.0.1', port=5000):
 @click.argument('result_name')
 @click.option('host', '-h', '--host', default='127.0.0.1', show_default=True, help='the api host')
 @click.option('port', '-p', '--port', default=5000, show_default=True, help='the api port')
-@click.option('path', '-s', '--save', default=None)
+@click.option('path', '-s', '--save', default=None, help='path to save data')
+@perror
 def get_snapshot_result(user_id, snapshot_id, result_name, host='127.0.0.1', port=5000, path=None):
     '''Print the specified snapshot’s result (if available).
     When given a path, the result is saved to the path in json format instead of being printed.

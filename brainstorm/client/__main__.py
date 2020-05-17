@@ -3,8 +3,8 @@ import click
 import sys
 import traceback
 
-from brainstorm.client.client import upload_sample
-from brainstorm.client.reader import Reader
+from .client import upload_sample
+from .reader import Reader
 
 
 @click.group()
@@ -40,16 +40,18 @@ def cli_upload_sample(path, *, host='127.0.0.1', port=8000,
     '''Upload a sample in given path to the server.
     The snapshots are POSTed to http://host:port/snapshot in bson format.
     '''
+    t = blessings.Terminal()
+    click.echo(t.green('uploading...'))
     try:
         upload_sample(path=path, host=host, port=port, reader_driver=reader_driver)
     except Exception as e:
         track = traceback.format_exc()
-        t = blessings.Terminal()
         if tb:
             click.echo(t.red(track))
         else:
             click.echo(t.red(f'Failed with exception {type(e).__name__}: \n{e}'))
         sys.exit(1)
+    click.echo(t.green('done!'))
 
 
 

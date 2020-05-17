@@ -39,6 +39,7 @@ The results are then exposed via a RESTful [API](#API), which is consumed by a [
     ```sh
     $ ./scripts/run-tests.sh
     ...
+    $
     ```
 
 ## Usage
@@ -67,6 +68,7 @@ This will also activate a `brainstorm.saver` and the following parsers:
 - pose parser
 
 See [Client](#Client) to learn about uploading data to the server, and [CLI](#CLI) to learn how to access the information via command line.
+Also see [example](#Example).
 
 ### Command Line Interface
 
@@ -126,7 +128,7 @@ Options:
 #### Message Queue
 
 Various parts of this project use a message queue to publish and consume information.
-The current implementation support [RabbitMQ](https://www.rabbitmq.com/) as a message queue.
+The current implementation supports [RabbitMQ](https://www.rabbitmq.com/) as a message queue.
 
 #### Parsers
 
@@ -182,7 +184,7 @@ Options:
 #### Database
 
 Various parts of this project use a database to save and read information.
-The current implementation support [MongoDB](https://www.mongodb.com/) as a message queue.
+The current implementation supports [MongoDB](https://www.mongodb.com/) as a message queue.
 
 #### API
 
@@ -225,6 +227,7 @@ The api server will respond to the following requests:
 #### CLI
 
 The cli is available via `brainstorm.cli` and supports the following commands:
+
 ```
 $ python -m brainstorm.cli get-users --help
 Usage: __main__.py get-users [OPTIONS]
@@ -234,6 +237,7 @@ Usage: __main__.py get-users [OPTIONS]
 Options:
   -h, --host TEXT     the api host  [default: 127.0.0.1]
   -p, --port INTEGER  the api port  [default: 5000]
+  -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
 ```
@@ -245,6 +249,7 @@ Usage: __main__.py get-user [OPTIONS] USER_ID
 Options:
   -h, --host TEXT     the api host  [default: 127.0.0.1]
   -p, --port INTEGER  the api port  [default: 5000]
+  -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
 ```
@@ -256,6 +261,7 @@ Usage: __main__.py get-snapshots [OPTIONS] USER_ID
 Options:
   -h, --host TEXT     the api host  [default: 127.0.0.1]
   -p, --port INTEGER  the api port  [default: 5000]
+  -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
 ```
@@ -268,6 +274,7 @@ Usage: __main__.py get-snapshot [OPTIONS] USER_ID SNAPSHOT_ID
 Options:
   -h, --host TEXT     the api host  [default: 127.0.0.1]
   -p, --port INTEGER  the api port  [default: 5000]
+  -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
 ```
@@ -280,13 +287,16 @@ Usage: __main__.py get-result [OPTIONS] USER_ID SNAPSHOT_ID RESULT_NAME
 Options:
   -h, --host TEXT     the api host  [default: 127.0.0.1]
   -p, --port INTEGER  the api port  [default: 5000]
-  -s, --save TEXT
+  -s, --save TEXT     path to save data
+  -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
 > Make sure the api server is running on the default host and port (or specify a different host and port) before running the cli commands.
 
 #### GUI
-Run the gui server to server results at `'http://host:port'`:
+
+Run the gui server to serve results at `'http://host:port'`:
+
 ```
 $ python -m brainstorm.gui run-server --help
 Usage: __main__.py run-server [OPTIONS]
@@ -303,3 +313,32 @@ Options:
   --help                  Show this message and exit.
 ```
 
+### Example
+
+Here is an example of running the pipeline and uploading a sample:
+
+```sh
+$ ./run-pipeline.sh 
+...
+
+$ python -m brainstorm.client upload-sample sample.mind.gz
+uploading...
+done!
+
+$ # to see the users that were uploaded:
+
+$ python -m brainstorm.cli get-users
++-------------+----------------+
+|   user_id   |    username    |
++-------------+----------------+
+|      12     |   Shai Rahat   |
++-------------+----------------+
+```
+After running the pipline like this results will be available at [http://localhost:8080](http://localhost:8080).
+
+To shut down the pipline:
+```sh
+$ ./stop-pipeline.sh 
+...
+$
+```

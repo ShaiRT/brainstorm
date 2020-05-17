@@ -1,7 +1,6 @@
 import brainstorm.server.server as server
 import bson
 import json
-import os
 import pytest
 
 from pathlib import Path
@@ -21,12 +20,12 @@ def compute_path(path, snapshot):
     user_id = snapshot['user']['user_id']
     path = Path(path).absolute() / str(user_id) / time_stamp
     return path
-    
+
 
 def test_save_blobs_paths(user, snapshot, tmp_path):
     snapshot['user'] = user
     color_image_path = compute_path(tmp_path, snapshot) / 'color_image'
-    depth_image_path = compute_path(tmp_path, snapshot) / 'depth_image'    
+    depth_image_path = compute_path(tmp_path, snapshot) / 'depth_image'
     server.save_blobs(snapshot, path=tmp_path)
     assert 'path' in snapshot['color_image']
     assert 'path' in snapshot['depth_image']
@@ -39,7 +38,7 @@ def test_save_blobs_no_data(user, snapshot, tmp_path):
     server.save_blobs(snapshot, path=tmp_path)
     assert 'data' not in snapshot['color_image']
     assert 'data' not in snapshot['depth_image']
-    
+
 
 def test_save_blobs(user, snapshot, tmp_path):
     snapshot['user'] = user
@@ -62,7 +61,7 @@ def mock_publish(data):
 def mock_save_blobs(monkeypatch):
     def mock_save(snapshot, path):
         pass
-    monkeypatch.setattr(server,'save_blobs', mock_save)
+    monkeypatch.setattr(server, 'save_blobs', mock_save)
 
 
 def test_handle_snapshot(snapshot_no_blobs, user, mock_save_blobs):
@@ -72,7 +71,7 @@ def test_handle_snapshot(snapshot_no_blobs, user, mock_save_blobs):
     snapshot['user'] = user
     snapshot['datetime'] = snapshot['datetime'].timestamp()
     snapshot['user']['birthday'] = snapshot['user']['birthday'].timestamp()
-    response = server.server.test_client().post('/snapshot', data=bson.encode(snapshot), 
+    response = server.server.test_client().post('/snapshot', data=bson.encode(snapshot),
                                                 headers={'Connection': 'close'})
     assert response.status_code == 200
     assert json.loads(snapshot_post) == snapshot
