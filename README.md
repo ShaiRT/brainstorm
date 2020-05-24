@@ -48,7 +48,7 @@ The results are then exposed via a RESTful [API](#API), which is consumed by a [
 
 To run the entire pipeline, run:
 ```sh
-$ ./run-pipeline.sh
+$ ./scripts/run-pipeline.sh
 ```
 This will run the follwing services on a [Docker]([https://www.docker.com/](https://www.docker.com/)) host:
 
@@ -203,7 +203,7 @@ Options:
                        mongodb://localhost:27017]
   --help               Show this message and exit.
 ```
-The api server will respond to the following requests:
+The API server will respond to the following requests:
 
 - GET /users  
   Returns a list of IDs and names of all supported users.
@@ -226,7 +226,7 @@ The api server will respond to the following requests:
 
 #### CLI
 
-The cli is available via `brainstorm.cli` and supports the following commands:
+The CLI is available via `brainstorm.cli` and supports the following commands:
 
 ```
 $ python -m brainstorm.cli get-users --help
@@ -291,11 +291,11 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-> Make sure the api server is running on the default host and port (or specify a different host and port) before running the cli commands.
+> Make sure the api server is running on the default host and port (or specify a different host and port) before running the CLI commands.
 
 #### GUI
 
-Run the gui server to serve results at `'http://host:port'`:
+Run the GUI server to serve results at `'http://host:port'`:
 
 ```
 $ python -m brainstorm.gui run-server --help
@@ -318,7 +318,7 @@ Options:
 Here is an example of running the pipeline and uploading a sample:
 
 ```sh
-$ ./run-pipeline.sh 
+$ ./scripts/run-pipeline.sh 
 ...
 
 $ python -m brainstorm.client upload-sample sample.mind.gz
@@ -338,7 +338,7 @@ After running the pipline like this results will be available at [http://localho
 
 To shut down the pipline:
 ```sh
-$ ./stop-pipeline.sh 
+$ ./scripts/stop-pipeline.sh 
 ...
 $
 ```

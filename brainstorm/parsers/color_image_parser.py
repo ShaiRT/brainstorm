@@ -9,8 +9,8 @@ def parse_color_image(snapshot):
 
     **assumes snapshot has a color image, a user and datetime
     
-    Arguments:
-        snapshot {dict} -- snapshot with a color image
+    Args:
+        snapshot (dict): snapshot with a color image
     
     Returns:
         dict -- parsed color image information

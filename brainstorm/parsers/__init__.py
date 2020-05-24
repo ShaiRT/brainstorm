@@ -1,10 +1,10 @@
-"""A module for snapshot parsers
+"""A package for snapshot parsers.
 
-Any ParserNameParser class or parse_parser_name(snapshot) function
-in a '.py' file in this directory will be included in the module.
-Files starting with '_' will be ignored.
+Any ``ParserNameParser`` class or ``parse_parser_name(snapshot)`` function
+in a ``'.py'`` file in the ``brainstorm/parsers`` directory will be included in the package.
+Files starting with ``'_'`` will be ignored.
 The parser classes will have one instance created when imported, 
-and must have a parse method.
+and must have a ``parse(snapshot)`` method.
 """
 import brainstorm.mq_drivers as mq_drivers
 import furl

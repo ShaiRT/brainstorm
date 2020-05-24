@@ -1,4 +1,4 @@
-import brainstorm.reader_drivers as drivers
+import brainstorm.client.reader_drivers as drivers
 import pytest
 
 from brainstorm.client import Reader

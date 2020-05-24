@@ -1,5 +1,5 @@
 import PIL.Image
-import brainstorm.reader_drivers as drivers
+import brainstorm.client.reader_drivers as drivers
 import google.protobuf.json_format as pb_json
 import inspect
 import numpy as np
@@ -7,8 +7,8 @@ import pytest
 import stringcase as sc
 import struct
 
-from brainstorm.reader_drivers.sample_pb2 import Snapshot
-from brainstorm.reader_drivers.sample_pb2 import User
+from brainstorm.client.reader_drivers.sample_pb2 import Snapshot
+from brainstorm.client.reader_drivers.sample_pb2 import User
 
 
 def test_import():

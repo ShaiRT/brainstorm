@@ -1,9 +1,9 @@
-"""A module for message queue drivers
+"""A package for message queue drivers
 
 Any Publisher or Subscriber class in a 'driver_name_driver.py' file 
-in this directory will be included in the module.
+in this directory will be included in the package.
 Files starting with '_' will be ignored.
-The module imports as a dictionary of {'driver_name': {'publisher': Publiser, 'subscriber': Subscriber}}.
+The package imports as a dictionary of {'driver_name': {'publisher': Publiser, 'subscriber': Subscriber}}.
 
 The Publisher class should have a publish(message) method,
 and the Subscriber class should have a subscribe(queue, callback) method.

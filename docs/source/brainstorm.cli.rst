@@ -1,10 +1,4 @@
 brainstorm.cli package
 ======================
 
-Module contents
----------------
-
-.. automodule:: brainstorm.cli
-   :members:
-   :undoc-members:
-   :show-inheritance:
+See `CLI <https://brainstormproject.readthedocs.io/en/latest/README.html#cli>`_ documentation.

@@ -2,8 +2,8 @@ def parse_feelings(snapshot):
     '''return only the snapshot feelings
     **assumes snapshot has feelings, a user and datetime
     
-    Arguments:
-        snapshot {dict} -- snapshot with feelings
+    Args:
+        snapshot (dict): snapshot with feelings
     
     Returns:
         dict -- feelings information

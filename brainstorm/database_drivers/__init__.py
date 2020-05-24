@@ -1,9 +1,9 @@
-"""A module for database drivers to be used by brainstorm.saver
+"""A package for database drivers to be used by brainstorm.saver
 
 Any DriverNameDriver class in a '.py' file in this directory
-will be included in the module.
+will be included in the package.
 Files starting with '_' will be ignored.
-The module imports as a dictionary of {'driver_name': DriverNameDriver}.
+The package imports as a dictionary of {'driver_name': DriverNameDriver}.
 
 The drivers should inplement the interface for the brainstorm.saver
 """

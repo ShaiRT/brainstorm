@@ -1,8 +1,7 @@
+import brainstorm.database_drivers as db_drivers
 import flask
 import furl
 import os
-
-import brainstorm.database_drivers as db_drivers
 
 from flask_cors import CORS
 
@@ -22,18 +21,14 @@ def after_request(response):
     return response
 
 
-@api_server.route("/shutdown", methods=['POST'])
-def shutdown_server():
-    # TODO: add username and password for shutdown?
-    shutdown = flask.request.environ.get('werkzeug.server.shutdown')
-    if shutdown is None:
-        raise RuntimeError('server shutdown failed')
-    shutdown()
-    return '', 200
-
-
 @api_server.route('/users')
 def get_users():
+    '''get a list all users in the database
+    triggered when '/users' route is requested (with GET)
+    
+    Returns:
+        string -- a list of users in json format
+    '''
     db = api_server.config['db']
     users = db.get_users()
     return flask.jsonify(users)
@@ -41,6 +36,15 @@ def get_users():
 
 @api_server.route('/users/<int:user_id>')
 def get_user(user_id):
+    '''get a specific user from the database
+    triggeres when '/users/<int:user_id>' route is requested (with GET)
+    
+    Args:
+        user_id (int): the requested user id
+    
+    Returns:
+        string -- the requested user's information (or 404 if no such user)
+    '''
     db = api_server.config['db']
     user = db.get_user(user_id)
     if user is None:
@@ -51,6 +55,15 @@ def get_user(user_id):
 
 @api_server.route('/users/<int:user_id>/snapshots')
 def get_snapshots(user_id):
+    '''get a list all snapshot of a certain user from the database
+    triggered when '/users/<int:user_id>/snapshots' route is requested (with GET)
+    
+    Args:
+        user_id (int): the requested user id
+    
+    Returns:
+        string -- list of snapshots in json format (empty list if user doesn't exist or has no snapshots)
+    '''
     db = api_server.config['db']
     snapshots = db.get_snapshots(user_id)
     for snapshot in snapshots:
@@ -61,6 +74,16 @@ def get_snapshots(user_id):
 
 @api_server.route('/users/<int:user_id>/snapshots/<int:snapshot_id>')
 def get_snapshot(user_id, snapshot_id):
+    '''get a specific snapshot by user snapshot id from the database
+    triggered when '/users/<int:user_id>/snapshots/<int:snapshot_id>' route is requested (with GET)
+    
+    Args:
+        user_id (int): id of requested user
+        snapshot_id (int): id of requested snapshot
+    
+    Returns:
+        string -- the requested snapshot (404 if it doesn't exist)
+    '''
     db = api_server.config['db']
     snapshot = db.get_snapshot(user_id, snapshot_id)
     if snapshot is None:
@@ -72,6 +95,17 @@ def get_snapshot(user_id, snapshot_id):
 
 @api_server.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>')
 def get_result(user_id, snapshot_id, result_name):
+    '''get a specific result of a snapshot by snapshot and user id from database
+    triggered when '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>' route is requested (with GET)
+    
+    Args:
+        user_id (int): id of requested user
+        snapshot_id (int): id of requested snapshot
+        result_name (string): name of requested result
+    
+    Returns:
+        string -- the requested result in json format (404 if no such result)
+    '''
     db = api_server.config['db']
     result = db.get_result(user_id, snapshot_id, result_name)
     if result is None:
@@ -84,6 +118,17 @@ def get_result(user_id, snapshot_id, result_name):
 
 @api_server.route('/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>/data')
 def get_result_data(user_id, snapshot_id, result_name):
+    '''get a specific result's data of a snapshot by snapshot and user id from database
+    triggered when '/users/<int:user_id>/snapshots/<int:snapshot_id>/<result_name>/data' route is requested (with GET)
+    
+    Args:
+        user_id (int): id of requested user
+        snapshot_id (int): id of requested snapshot
+        result_name (string): name of requested result
+    
+    Returns:
+        requested data (image) or 404 if data doesn't exist
+    '''
     if result_name not in ['color_image', 'depth_image']:
         return '', 404
     db = api_server.config['db']
@@ -96,10 +141,10 @@ def get_result_data(user_id, snapshot_id, result_name):
 def run_api_server(host='127.0.0.1', port=5000, database_url='mongodb://localhost:27017'):
     '''Run the api server to respond to http requests at 'http://host:port' and expose the data in the database.
     
-    Keyword Arguments:
-        host {str} -- the servers host (default: {'127.0.0.1'})
-        port {number} -- the servers port (default: {5000})
-        database_url {str} -- the url of the database (default: {'mongodb://localhost'})
+    Args:
+        host (str): the servers host (default: {'127.0.0.1'})
+        port (int): the servers port (default: {5000})
+        database_url (str): the url of the database (default: {'mongodb://localhost'})
     '''
     global api_server
     api_server.config['db'] = db_drivers[furl.furl(database_url).scheme](database_url)

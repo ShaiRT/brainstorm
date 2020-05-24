@@ -6,8 +6,8 @@ import google.protobuf.json_format as pb_json
 import gzip
 import struct
 
-from brainstorm.reader_drivers.sample_pb2 import Snapshot
-from brainstorm.reader_drivers.sample_pb2 import User
+from brainstorm.client.reader_drivers.sample_pb2 import Snapshot
+from brainstorm.client.reader_drivers.sample_pb2 import User
 
 
 class ProtobufDriver:
@@ -18,8 +18,7 @@ class ProtobufDriver:
     where the first one is a User message,
     and the rest are Snapshot messages, as defined in 'sample.proto'.
 
-    Implements the interface required by brainstorm.reader.Reader
-
+    Implements the interface required by brainstorm.client.reader
     '''
 
     genders = {0: 'male', 1: 'female', 2: 'other'}

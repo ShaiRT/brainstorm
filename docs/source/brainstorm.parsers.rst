@@ -1,8 +1,12 @@
 brainstorm.parsers package
 ==========================
 
+A package for snapshots parsers.
+
+See `Parsers <https://brainstormproject.readthedocs.io/en/latest/README.html#parsers>`_ documentation for CLI usage of the package.
+
 Submodules
-----------
+**********
 
 brainstorm.parsers.color\_image\_parser module
 ----------------------------------------------
@@ -38,7 +42,7 @@ brainstorm.parsers.pose\_parser module
 
 
 Module contents
----------------
+***************
 
 .. automodule:: brainstorm.parsers
    :members:

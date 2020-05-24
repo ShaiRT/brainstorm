@@ -12,8 +12,8 @@ def parse_depth_image(snapshot):
 
     **assumes snapshot has a depth image, a user and datetime
     
-    Arguments:
-        snapshot {dict} -- snapshot with a depth image
+    Args:
+        snapshot (dict): snapshot with a depth image
     
     Returns:
         dict -- parsed depth image information

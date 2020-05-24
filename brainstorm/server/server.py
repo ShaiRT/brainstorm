@@ -22,25 +22,6 @@ os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 server = flask.Flask('brainstorm')
 
 
-@server.route("/shutdown", methods=['POST'])
-def shutdown_server():
-    """This function shuts down the server.
-    Triggered by a POST to /shutdown
-
-    Returns:
-        200 OK
-
-    Raises:
-        RuntimeError: shutdown failed
-    """
-    # TODO: add username and password for shutdown?
-    shutdown = flask.request.environ.get('werkzeug.server.shutdown')
-    if shutdown is None:
-        raise RuntimeError('server shutdown failed')
-    shutdown()
-    return '', 200
-
-
 @server.route('/snapshot', methods=['POST'])
 def handle_snapshot():
     """Handle a snapshot that arrived.
@@ -60,9 +41,9 @@ def save_blobs(snapshot, *, path):
     '''Save color and depth image of snapshot
     and convert datetime objects to integers
 
-    Arguments:
-        snapshot {dict} -- the snapshot
-        path {str} -- path to save the data
+    Args:
+        snapshot (dict): the snapshot
+        path (str): path to save the data
     '''
     date = snapshot['datetime']
     time_format = '%Y-%m-%d_%H-%M-%S-%f'
@@ -86,10 +67,10 @@ def run_server(*, host='127.0.0.1', port=8000, publish=print, path='data'):
     '''run the servet at 'http://host:port'
 
     Keyword Arguments:
-        host {str} -- the server host (default: {'127.0.0.1'})
-        port {int} -- the server port (default: {8000})
-        publish {function} -- function to handle snapshots (default: {print})
-        path {str} -- path to save blobs (default: {'data'})
+        host (str): the server host (default: {'127.0.0.1'})
+        port (int): the server port (default: {8000})
+        publish (function): function to handle snapshots (default: {print})
+        path (str): path to save blobs (default: {'data'})
     '''
     global server
     server.config['publish'] = publish
@@ -100,13 +81,13 @@ def run_server(*, host='127.0.0.1', port=8000, publish=print, path='data'):
 def run_server_with_queue(url, *, host='127.0.0.1', port=8000, path='data'):
     '''run the server with message queue from mq_drivers.
 
-    Arguments:
-        url {str} -- message queue url
+    Args:
+        url (str): message queue url
 
     Keyword Arguments:
-        host {str} -- server host (default: {'127.0.0.1'})
-        port {int} -- server port (default: {8000})
-        path {str} -- directory for blob storage (default: {'data'})
+        host (str): server host (default: {'127.0.0.1'})
+        port (int): server port (default: {8000})
+        path (str): directory for blob storage (default: {'data'})
     '''
     publisher_class = mq_drivers[furl.furl(url).scheme]['publisher']
     publish = publisher_class(url, 'snapshots', 'fanout', '').publish

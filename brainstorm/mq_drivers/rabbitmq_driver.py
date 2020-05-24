@@ -64,7 +64,7 @@ class Subscriber:
         
         Keyword Arguments:
             routing_key {str} -- routing key to filter messages (default: {'#'})
-            just_one {bool} -- [description] (default: {False})
+            just_one {bool} -- consume only one message (default: {False})
         '''
         connection = pika.BlockingConnection(self.params)
         channel = connection.channel()

@@ -25,6 +25,7 @@ class MongodbDriver:
 
     def save_user(self, user):
         """Save a user to the database
+        user must have 'user_id'
         
         Args:
             user (dict): the user
@@ -106,11 +107,6 @@ class MongodbDriver:
         ret['datetime'] = snapshot['datetime']
         ret['available_results'] = [key for key, val in snapshot.items() 
                                     if val and key not in {'snapshot_id', 'datetime', 'user_id'}]
-        '''
-        ret['available_results'] = set(snapshot.keys())
-        ret['available_results'] -= {'snapshot_id', 'datetime', 'user_id'}
-        ret['available_results'] = list(ret['available_results'])
-        '''
         if not ret['available_results']:
             ret['available_results'] = None
         return ret

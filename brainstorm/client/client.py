@@ -11,15 +11,13 @@ def upload_sample(path, host='127.0.0.1', port=8000, reader_driver='protobuf'):
     '''Upload a sample in given path to the server
     The snapshots are POSTed to http://host:port/snapshot in bson format
 
-    Arguments:
-        path {str} -- the path of the sample file
-
-    Keyword Arguments:
-        host {str} -- ip address of the server (default: {'127.0.0.1'})
-        port {number} -- the server port (default: {8000})
-        reader_driver {str} -- a driver for the sample reader
-                               (from brainstorm.reader_drivers)
-                               (default: {'protobuf'})
+    Args:
+        path (str): the path of the sample file
+        host (str): ip address of the server (default: {'127.0.0.1'})
+        port (number): the server port (default: {8000})
+        reader_driver (str): a driver name for the sample reader
+                             (from brainstorm.client.reader_drivers)
+                             (default: {'protobuf'})
 
     Raises:
         ConnectionError -- when communication to the server fails

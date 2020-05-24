@@ -1,12 +1,12 @@
-"""A sample reader
-Uses the drivers in brainstorm.reader_drivers
+"""A sample reader.
+Uses the drivers in brainstorm.client.reader_drivers
 
 The driver provided to the reader must implement the following interface:
 a get_user() method that returns a user as a dict.
 a get_snapshot() method that returns a snapshot as a dict.
 **the driver may assume that get_user() will be called before get_snapshot()
 """
-import brainstorm.reader_drivers as drivers
+from . import reader_drivers as drivers
 
 
 class Reader:
