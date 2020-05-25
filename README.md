@@ -20,7 +20,7 @@ The results are then exposed via a RESTful [API](#API), which is consumed by a [
 1. Clone the repository and enter it:
 
     ```sh
-    $ git clone git@github.com:ShaiRT/BrainStorm.git
+    $ git clone git@github.com:ShaiRT/brainstorm.git
     ...
     $ cd BrainStorm/
     ```
