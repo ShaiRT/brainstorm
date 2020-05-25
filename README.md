@@ -22,7 +22,7 @@ The results are then exposed via a RESTful [API](#API), which is consumed by a [
     ```sh
     $ git clone git@github.com:ShaiRT/brainstorm.git
     ...
-    $ cd BrainStorm/
+    $ cd brainstorm/
     ```
 
 2. Run the installation script and activate the virtual environment:
