@@ -19,7 +19,7 @@ class Saver:
 
     def save(self, data):
         """Save data to the savers database
-        
+
         Args:
             data (str): data in json format
         """
@@ -27,7 +27,8 @@ class Saver:
         user = snapshot['user']
         del snapshot['user']
         snapshot['user_id'] = user['user_id']
-        snapshot['datetime'] = dt.datetime.fromtimestamp(snapshot['datetime'] / 1000.0)
+        snapshot['datetime'] = \
+            dt.datetime.fromtimestamp(snapshot['datetime'] / 1000.0)
         user['birthday'] = dt.datetime.fromtimestamp(user['birthday'])
         self.db.save_user(user)
         self.db.save_snapshot(snapshot)
@@ -35,7 +36,7 @@ class Saver:
 
 def save_from_path(database_url, path):
     """Save data in path to database in given url
-    
+
     Args:
         database_url (str): the url of the database
         path (str): path to a file with json format content
@@ -49,7 +50,7 @@ def save_from_path(database_url, path):
 def run_saver(database_url, mq_url):
     """Run the saver to save messages from message queue to database.
     The saver saves all messages received in 'data' topic exchange.
-    
+
     Args:
         database_url (str): url of the database
         mq_url (str): url of the message queue

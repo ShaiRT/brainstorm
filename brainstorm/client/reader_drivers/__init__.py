@@ -21,7 +21,8 @@ for path in root.glob('**/*.py'):
     if path.name.startswith('_'):
         continue
     sys.path.insert(0, str(path.parent))
-    m = importlib.import_module(path.stem, package='brainstorm.client.reader_drivers')
+    m = importlib.import_module(path.stem,
+                                package='brainstorm.client.reader_drivers')
     sys.path.pop(0)
     for name, obj in m.__dict__.items():
         if inspect.isclass(obj):

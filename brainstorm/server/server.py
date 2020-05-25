@@ -2,20 +2,14 @@
 """
 import bson
 import flask
-import functools as ft
 import furl
 import json
-import logging
 import os
 import brainstorm.mq_drivers as mq_drivers
 
 from pathlib import Path
 
-'''
-# this code will suppress flask messages:
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
-'''
+
 os.environ['WERKZEUG_RUN_MAIN'] = 'true'
 
 

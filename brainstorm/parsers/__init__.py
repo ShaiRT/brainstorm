@@ -1,10 +1,11 @@
 """A package for snapshot parsers.
 
 Any ``ParserNameParser`` class or ``parse_parser_name(snapshot)`` function
-in a ``'.py'`` file in the ``brainstorm/parsers`` directory will be included in the package.
+in a ``'.py'`` file in the ``brainstorm/parsers``
+directory will be included in the package.
 Files starting with ``'_'`` will be ignored.
-The parser classes will have one instance created when imported, 
-and must have a ``parse(snapshot)`` method.
+The parser classes will have one instance
+created when imported, and must have a ``parse(snapshot)`` method.
 """
 import brainstorm.mq_drivers as mq_drivers
 import furl
@@ -42,14 +43,14 @@ for path in root.glob('**/*.py'):
 
 def parse(name, data):
     """users parser to parse json snapshot data
-    
+
     Args:
         name (str): the name of the parser to be used
         data (str): the snapshot data in json format
-    
+
     Returns:
-        str: the parsed data as json 
-        if name is not an existing parser or 
+        str: the parsed data as json
+        if name is not an existing parser or
         snapshot doesn't have a name field return None
     """
     global parsers
@@ -64,25 +65,25 @@ def parse(name, data):
 def parse_path(name, path):
     """parse snapshot data in given path
     path has to be a file with data in json format
-    
+
     Args:
         name (str): the name of the parser to be used
         path (str): the path of data to be parsed
-    
+
     Returns:
         str: parsed information in json format
     """
     with open(path, 'rb') as f:
         data = f.read()
-    return parse(name, data)    
+    return parse(name, data)
 
 
 def run_parser(name, url):
     """run parser to listen to message queue, parse data,
-    and post back to 'data' topic exchange of the 
+    and post back to 'data' topic exchange of the
     message queue with routing_key=name.
     uses message queue from mq_drivers
-    
+
     Args:
         name (str): name of the parser to be used
         url (str): url of the message queue

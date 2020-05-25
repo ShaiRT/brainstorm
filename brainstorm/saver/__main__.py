@@ -1,9 +1,4 @@
-import brainstorm.database_drivers as db_drivers
-import brainstorm.mq_drivers as mq_drivers
 import click
-import datetime as dt
-import furl
-import json
 
 from .saver import save_from_path, run_saver
 
@@ -15,7 +10,8 @@ def saver_cli():
 
 @saver_cli.command('save')
 @click.option('database_url', '-d', '--database',
-              default='mongodb://localhost:27017/', show_default=True, help='the url of the database')
+              default='mongodb://localhost:27017/',
+              show_default=True, help='the url of the database')
 @click.argument('path')
 def cli_save_from_path(database_url, path):
     '''Save data in given path to database in given url

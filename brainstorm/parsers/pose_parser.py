@@ -1,10 +1,10 @@
 def parse_pose(snapshot):
     '''return only the snapshot pose
     **assumes snapshot has pose, a user and datetime
-    
+
     Args:
         snapshot (dict): snapshot with pose
-    
+
     Returns:
         dict -- pose information
     '''
