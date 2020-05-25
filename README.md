@@ -34,6 +34,10 @@ The results are then exposed via a RESTful [API](#API), which is consumed by a [
     [brainstorm] $ # you're good to go!
     ```
 
+    > Note:
+    > Before running this script make sure you have docker and docker-compose installed.
+    > If not, use ```$ ./scripts/install-docker.sh``` to install it.
+
 3. To check that everything is working as expected, run the tests:
 
     ```sh
@@ -312,6 +316,10 @@ Options:
   -t, --traceback         show full traceback on failure  [default: False]
   --help                  Show this message and exit.
 ```
+
+> Note:
+> Before running this command for the first time run ```$ ./scripts/build-gui.sh```.
+> This is only necessary when running this command without ```./scripts/run-pipeline.sh```.
 
 ### Example
 

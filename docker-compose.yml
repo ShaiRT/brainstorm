@@ -65,7 +65,7 @@ services:
       - mongodb
     volumes:
       - blobstore:/data
-    command: ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.saver run-saver mongodb://mongodb:27017 rabbitmq://rabbitmq:5672
+    command: ./wait-for-it.sh mongodb:27017 -- ./wait-for-it.sh rabbitmq:5672 -- python3.8 -m brainstorm.saver run-saver mongodb://mongodb:27017 rabbitmq://rabbitmq:5672
   
   api:
     image: brainstorm
@@ -76,18 +76,20 @@ services:
       - 5000:5000
     volumes:
       - blobstore:/data
-    command: python3.8 -m brainstorm.api run-server -d mongodb://mongodb:27017 -h 0.0.0.0
+    command: ./wait-for-it.sh mongodb:27017 -- python3.8 -m brainstorm.api run-server -d mongodb://mongodb:27017 -h 0.0.0.0
   
   gui:
-    image: brainstorm
+    image: brainstorm-gui
+    build:
+      context: .
+      dockerfile: Dockerfile.gui
     depends_on:
-      - server
       - api
     ports:
       - 8080:8080
     volumes:
       - blobstore:/data
-    command: python3.8 -m brainstorm.gui run-server -h 0.0.0.0
+    command: ./wait-for-it.sh api:5000 -- python3.8 -m brainstorm.gui run-server -h 0.0.0.0
 
 volumes:
   mongodb_data:

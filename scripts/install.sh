@@ -10,15 +10,10 @@ function main {
     .env/bin/pip install -U pip
     .env/bin/pip install -r requirements.txt
 
-    sudo sh get-docker.sh
-    # TODO: pull images for mongo and rabbitmq and build bs image
-
-    # TODO: install npm and build gui?
-    # apt-get update -y
-	# apt-get install -y npm
-	# npm install -g npm@latest
-	# sudo npm install ./brainstorm/gui/gui-app
-    # npm run --prefix ./brainstorm/gui/gui-app build
+    sudo docker pull rabbitmq:management
+    sudo docker pull mongo
+    sudo docker build -t brainstorm .
+    sudo docker build -f Dockerfile.gui -t brainstorm-gui .
 }
 
 
