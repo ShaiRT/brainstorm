@@ -39,7 +39,8 @@ extensions = [
 'sphinx.ext.coverage',
 'sphinx.ext.doctest',
 'sphinx.ext.todo',
-'recommonmark'
+'recommonmark',
+'sphinx_markdown_tables',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
