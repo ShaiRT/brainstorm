@@ -342,7 +342,7 @@ $ python -m brainstorm.cli get-users
 |      12     |   Shai Rahat   |
 +-------------+----------------+
 ```
-After running the pipline like this results will be available at [http://localhost:8080](http://localhost:8080).
+After running the pipline like this results will be available at [http://0.0.0.0:8080](http://0.0.0.0:8080).
 
 To shut down the pipline:
 ```sh

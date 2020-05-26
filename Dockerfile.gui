@@ -6,9 +6,13 @@ RUN pip3.8 install -r requirements.txt
 ADD scripts/wait-for-it.sh /wait-for-it.sh
 ADD brainstorm /brainstorm
 
+RUN apt-get update
 RUN apt-get install -y npm
 RUN npm install -g npm@latest
-RUN npm run --prefix /brainstorm/gui/gui-app build
-RUN npm install /brainstorm/gui/gui-app
+
+WORKDIR brainstorm/gui/gui-app
+RUN npm install
+RUN npm run build
+WORKDIR /
 
 EXPOSE 8080
