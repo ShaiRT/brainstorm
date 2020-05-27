@@ -54,7 +54,7 @@ To run the entire pipeline, run:
 ```sh
 $ ./scripts/run-pipeline.sh
 ```
-This will run the follwing services on a [Docker]([https://www.docker.com/](https://www.docker.com/)) host:
+This will run the follwing services on a [Docker](https://www.docker.com/) host:
 
 |program   |host         |port|protocol  |package            |
 |----------|-------------|----|:--------:|-------------------|
@@ -82,7 +82,7 @@ Also see [example](#Example).
 #### Client
 
 To upload data to the server, use the clients upload-sample command:
-```sh
+```
 $ python -m brainstorm.client upload-sample --help
 Usage: __main__.py upload-sample [OPTIONS] PATH
 
@@ -100,7 +100,7 @@ Options:
 ```
 
 To view information in a sample in command line without sending to server use the clients read command:
-```sh
+```
 $ python -m brainstorm.client read --help
 Usage: __main__.py read [OPTIONS] PATH
 
@@ -117,7 +117,7 @@ Options:
 #### Server
 
 To run the server use the following command:
-```sh
+```
 $ python -m brainstorm.server run-server --help
 Usage: __main__.py run-server [OPTIONS] URL
 
@@ -140,7 +140,7 @@ The current implementation supports [RabbitMQ](https://www.rabbitmq.com/) as a m
 #### Parsers
 
 `brainstorm.parsers` provides the following command line interface:
-```sh
+```
 $ python -m brainstorm.parsers parse --help
 Usage: __main__.py parse [OPTIONS] NAME PATH
 
@@ -151,7 +151,7 @@ Options:
   -t, --traceback  show full traceback on failure  [default: False]
   --help           Show this message and exit.
 ```
-```sh
+```
 $ python -m brainstorm.parsers run-parser --help
 Usage: __main__.py run-parser [OPTIONS] NAME URL
 
@@ -168,7 +168,7 @@ To add parsers to the `brainstorm.parsers` package, simply add a `.py` file to t
 
 #### Saver
 
-```sh
+```
 $ python -m brainstorm.saver save --help
 Usage: __main__.py save [OPTIONS] PATH
 
@@ -180,7 +180,7 @@ Options:
 
   --help               Show this message and exit.
 ```
-```sh
+```
 $ python -m brainstorm.saver run-saver --help
 Usage: __main__.py run-saver [OPTIONS] DATABASE_URL MQ_URL
 
@@ -200,7 +200,7 @@ The current implementation supports [MongoDB](https://www.mongodb.com/) as a mes
 #### API
 
 To run `brainstorm.api` simply use
-```sh
+```
 $ python -m brainstorm.api run-server --help
 Usage: __main__.py run-server [OPTIONS]
 
@@ -241,7 +241,7 @@ The API server will respond to the following requests:
 
 The CLI is available via `brainstorm.cli` and supports the following commands:
 
-```sh
+```
 $ python -m brainstorm.cli get-users --help
 Usage: __main__.py get-users [OPTIONS]
 
@@ -253,7 +253,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```sh
+```
 $ python -m brainstorm.cli get-user --help
 Usage: __main__.py get-user [OPTIONS] USER_ID
 
@@ -265,7 +265,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```sh
+```
 $ python -m brainstorm.cli get-snapshots --help
 Usage: __main__.py get-snapshots [OPTIONS] USER_ID
 
@@ -277,7 +277,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```sh
+```
 $ python -m brainstorm.cli get-snapshot --help
 Usage: __main__.py get-snapshot [OPTIONS] USER_ID SNAPSHOT_ID
 
@@ -290,7 +290,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```sh
+```
 $ python -m brainstorm.cli get-result --help
 Usage: __main__.py get-result [OPTIONS] USER_ID SNAPSHOT_ID RESULT_NAME
 
@@ -310,7 +310,7 @@ Options:
 
 Run the GUI server to serve results at `'http://host:port'`:
 
-```sh
+```
 $ python -m brainstorm.gui run-server --help
 Usage: __main__.py run-server [OPTIONS]
 
