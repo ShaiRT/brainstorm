@@ -15,6 +15,8 @@ class Saver:
             database_url (str): the url of the database
         """
         driver = furl.furl(database_url).scheme
+        if driver not in db_drivers:
+            raise NotImplementedError(f"No database driver named '{driver}'")
         self.db = db_drivers[driver](database_url)
 
     def save(self, data):
@@ -56,6 +58,9 @@ def run_saver(database_url, mq_url):
         mq_url (str): url of the message queue
     """
     saver = Saver(database_url)
-    subscriber_class = mq_drivers[furl.furl(mq_url).scheme]['subscriber']
+    mq_driver = furl.furl(mq_url).scheme
+    if mq_driver not in mq_drivers:
+            raise NotImplementedError(f"No mq driver named '{mq_driver}'")
+    subscriber_class = mq_drivers[mq_driver]['subscriber']
     subscriber = subscriber_class(mq_url, 'data', 'topic')
     subscriber.subscribe('save', saver.save, routing_key='#')

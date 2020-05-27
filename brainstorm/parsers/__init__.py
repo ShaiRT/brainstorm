@@ -53,7 +53,6 @@ def parse(name, data):
         if name is not an existing parser or
         snapshot doesn't have a name field return None
     """
-    global parsers
     if name not in parsers:
         return None
     snapshot = json.loads(data)
@@ -88,6 +87,10 @@ def run_parser(name, url):
         name (str): name of the parser to be used
         url (str): url of the message queue
     """
+    driver = furl.furl(url).scheme
+    if driver not in mq_drivers:
+            raise NotImplementedError(f"No mq driver named '{driver}'")
+
     def callback(data):
         parsed_data = parse(name, data)
         if not parsed_data:
@@ -96,6 +99,6 @@ def run_parser(name, url):
         publisher = publisher_class(url, 'data', 'topic', name)
         publisher.publish(parsed_data)
 
-    subscriber_class = mq_drivers[furl.furl(url).scheme]['subscriber']
+    subscriber_class = mq_drivers[driver]['subscriber']
     subscriber = subscriber_class(url, 'snapshots', 'fanout')
     subscriber.subscribe(name, callback)

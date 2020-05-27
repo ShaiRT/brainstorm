@@ -17,16 +17,29 @@ def client_cli():
               default='protobuf', show_default=True,
               help='the name of the driver for the sample - ' +
               'must be a driver from brainstorm.reader_drivers')
+@click.option('tb', '-t', '--traceback', is_flag=True,
+              default=False, show_default=True,
+              help='show full traceback on failure')
 @click.argument('path')
-def read(path, driver='protobuf'):
+def read(path, driver='protobuf', tb=False):
     '''Read the sample in given path and print the information.
     '''
-    reader = Reader(path, driver=driver)
-    click.echo(reader)
-    for snapshot in reader:
-        date = snapshot['datetime'].strftime('%B%e, %Y')
-        time = snapshot['datetime'].strftime('%H:%M:%S.%f')
-        click.echo(f'Snapshot from {date} at {time}')
+    try:
+        reader = Reader(path, driver=driver)
+        click.echo(reader)
+        for snapshot in reader:
+            date = snapshot['datetime'].strftime('%B%e, %Y')
+            time = snapshot['datetime'].strftime('%H:%M:%S.%f')
+            click.echo(f'Snapshot from {date} at {time}')
+    except Exception as e:
+        track = traceback.format_exc()
+        t = blessings.Terminal()
+        if tb:
+            click.echo(t.red(track))
+        else:
+            click.echo(t.red(
+                f'Failed with exception {type(e).__name__}: \n{e}'))
+        sys.exit(1)
 
 
 @client_cli.command('upload-sample')
@@ -36,7 +49,7 @@ def read(path, driver='protobuf'):
               show_default=True, help='the server port')
 @click.option('reader_driver', '-rd', '--reader-driver',
               default='protobuf', show_default=True,
-              help='a driver for the sample reader' +
+              help='a driver for the sample reader ' +
               '(from brainstorm.reader_drivers)')
 @click.option('tb', '-t', '--traceback', is_flag=True,
               default=False, show_default=True,

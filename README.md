@@ -82,24 +82,25 @@ Also see [example](#Example).
 #### Client
 
 To upload data to the server, use the clients upload-sample command:
-```
+```sh
 $ python -m brainstorm.client upload-sample --help
 Usage: __main__.py upload-sample [OPTIONS] PATH
 
   Upload a sample in given path to the server. The snapshots are POSTed to
-  http://host:port/snapshot in bson format
+  http://host:port/snapshot in bson format.
 
 Options:
   -h, --host TEXT            ip address of the server  [default: 127.0.0.1]
   -p, --port INTEGER         the server port  [default: 8000]
   -rd, --reader-driver TEXT  a driver for the sample reader (from
                              brainstorm.reader_drivers)  [default: protobuf]
+
   -t, --traceback            show full traceback on failure  [default: False]
   --help                     Show this message and exit.
 ```
 
 To view information in a sample in command line without sending to server use the clients read command:
-```
+```sh
 $ python -m brainstorm.client read --help
 Usage: __main__.py read [OPTIONS] PATH
 
@@ -108,13 +109,15 @@ Usage: __main__.py read [OPTIONS] PATH
 Options:
   -d, --driver TEXT  the name of the driver for the sample - must be a driver
                      from brainstorm.reader_drivers  [default: protobuf]
+
+  -t, --traceback    show full traceback on failure  [default: False]
   --help             Show this message and exit.
 ```
 
 #### Server
 
 To run the server use the following command:
-```
+```sh
 $ python -m brainstorm.server run-server --help
 Usage: __main__.py run-server [OPTIONS] URL
 
@@ -137,7 +140,7 @@ The current implementation supports [RabbitMQ](https://www.rabbitmq.com/) as a m
 #### Parsers
 
 `brainstorm.parsers` provides the following command line interface:
-```
+```sh
 $ python -m brainstorm.parsers parse --help
 Usage: __main__.py parse [OPTIONS] NAME PATH
 
@@ -145,25 +148,27 @@ Usage: __main__.py parse [OPTIONS] NAME PATH
   result
 
 Options:
-  --help  Show this message and exit.
+  -t, --traceback  show full traceback on failure  [default: False]
+  --help           Show this message and exit.
 ```
-```
+```sh
 $ python -m brainstorm.parsers run-parser --help
 Usage: __main__.py run-parser [OPTIONS] NAME URL
 
   run parser with given name to listen to message queue in given url, parse
-  data, and post back to 'data' topic exchange of the  message queue with
+  data, and post back to 'data' topic exchange of the message queue with
   routing_key=name.
 
 Options:
-  --help  Show this message and exit.
+  -t, --traceback  show full traceback on failure  [default: False]
+  --help           Show this message and exit.
 ```
 To add parsers to the `brainstorm.parsers` package, simply add a `.py` file to the packge containing a `parse_parser_name(snapshot)` function or a `ParserNameParser` class with a `self.parse(snapshot)` method.
 ** files starting with `_` will be ignored.
 
 #### Saver
 
-```
+```sh
 $ python -m brainstorm.saver save --help
 Usage: __main__.py save [OPTIONS] PATH
 
@@ -172,9 +177,10 @@ Usage: __main__.py save [OPTIONS] PATH
 Options:
   -d, --database TEXT  the url of the database  [default:
                        mongodb://localhost:27017/]
+
   --help               Show this message and exit.
 ```
-```
+```sh
 $ python -m brainstorm.saver run-saver --help
 Usage: __main__.py run-saver [OPTIONS] DATABASE_URL MQ_URL
 
@@ -182,7 +188,8 @@ Usage: __main__.py run-saver [OPTIONS] DATABASE_URL MQ_URL
   database. The saver saves all messages received in 'data' topic exchange.
 
 Options:
-  --help  Show this message and exit.
+  -t, --traceback  show full traceback on failure  [default: False]
+  --help           Show this message and exit.
 ```
 
 #### Database
@@ -193,7 +200,7 @@ The current implementation supports [MongoDB](https://www.mongodb.com/) as a mes
 #### API
 
 To run `brainstorm.api` simply use
-```
+```sh
 $ python -m brainstorm.api run-server --help
 Usage: __main__.py run-server [OPTIONS]
 
@@ -205,6 +212,8 @@ Options:
   -p, --port INTEGER   the servers port  [default: 5000]
   -d, --database TEXT  the url of the database  [default:
                        mongodb://localhost:27017]
+
+  -t, --traceback      show full traceback on failure  [default: False]
   --help               Show this message and exit.
 ```
 The API server will respond to the following requests:
@@ -232,7 +241,7 @@ The API server will respond to the following requests:
 
 The CLI is available via `brainstorm.cli` and supports the following commands:
 
-```
+```sh
 $ python -m brainstorm.cli get-users --help
 Usage: __main__.py get-users [OPTIONS]
 
@@ -244,7 +253,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```
+```sh
 $ python -m brainstorm.cli get-user --help
 Usage: __main__.py get-user [OPTIONS] USER_ID
 
@@ -256,7 +265,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```
+```sh
 $ python -m brainstorm.cli get-snapshots --help
 Usage: __main__.py get-snapshots [OPTIONS] USER_ID
 
@@ -268,7 +277,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```
+```sh
 $ python -m brainstorm.cli get-snapshot --help
 Usage: __main__.py get-snapshot [OPTIONS] USER_ID SNAPSHOT_ID
 
@@ -281,7 +290,7 @@ Options:
   -t, --traceback     show full traceback on failure  [default: False]
   --help              Show this message and exit.
 ```
-```
+```sh
 $ python -m brainstorm.cli get-result --help
 Usage: __main__.py get-result [OPTIONS] USER_ID SNAPSHOT_ID RESULT_NAME
 
@@ -301,7 +310,7 @@ Options:
 
 Run the GUI server to serve results at `'http://host:port'`:
 
-```
+```sh
 $ python -m brainstorm.gui run-server --help
 Usage: __main__.py run-server [OPTIONS]
 
@@ -342,7 +351,7 @@ $ python -m brainstorm.cli get-users
 |      12     |   Shai Rahat   |
 +-------------+----------------+
 ```
-After running the pipline like this results will be available at [http://0.0.0.0:8080](http://0.0.0.0:8080).
+After running the pipline like this results will be available at [http://localhost:8080](http://localhost:8080).
 
 To shut down the pipline:
 ```sh

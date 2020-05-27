@@ -23,13 +23,15 @@ class Reader:
     def __init__(self, path, *, driver='protobuf'):
         '''
         Arguments:
-            path {str} -- a path to a sample in the format of the driver
+            path (str): a path to a sample in the format of the driver
 
         Keyword Arguments:
-            driver {str} -- the name of the driver for the sample
-                            (default: {'protobuf'})
-                            must be a driver from brainstorm.reader_drivers
+            driver (str): the name of the driver for the sample
+                          (default: {'protobuf'})
+                          must be a driver from brainstorm.reader_drivers
         '''
+        if driver not in drivers:
+            raise NotImplementedError(f"No reader driver named '{driver}'")
         self.driver = drivers[driver](path)
         self.user = self.driver.get_user()
 

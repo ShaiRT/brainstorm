@@ -162,6 +162,8 @@ def run_api_server(host='127.0.0.1', port=5000,
                             (default: {'mongodb://localhost'})
     '''
     global api_server
-    api_server.config['db'] = \
-        db_drivers[furl.furl(database_url).scheme](database_url)
+    driver = furl.furl(database_url).scheme
+    if driver not in db_drivers:
+            raise NotImplementedError(f"No database driver named '{driver}'")
+    api_server.config['db'] = db_drivers[driver](database_url)
     api_server.run(host=host, port=port, debug=False, threaded=True)

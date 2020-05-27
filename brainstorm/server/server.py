@@ -83,6 +83,9 @@ def run_server_with_queue(url, *, host='127.0.0.1', port=8000, path='data'):
         port (int): server port (default: {8000})
         path (str): directory for blob storage (default: {'data'})
     '''
-    publisher_class = mq_drivers[furl.furl(url).scheme]['publisher']
+    driver = furl.furl(url).scheme
+    if driver not in mq_drivers:
+            raise NotImplementedError(f"No mq driver named '{driver}'")
+    publisher_class = mq_drivers[driver]['publisher']
     publish = publisher_class(url, 'snapshots', 'fanout', '').publish
     run_server(host=host, port=port, publish=publish, path=path)

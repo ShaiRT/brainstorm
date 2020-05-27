@@ -10,7 +10,7 @@ function main {
     .env/bin/pip install -U pip
     .env/bin/pip install -r requirements.txt
 
-    sudo docker pull rabbitmq:management
+    sudo docker pull rabbitmq
     sudo docker pull mongo
     sudo docker build -t brainstorm .
     sudo docker build -f Dockerfile.gui -t brainstorm-gui .
