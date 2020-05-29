@@ -24,7 +24,7 @@ def gui_cli():
               show_default=True, help='show full traceback on failure')
 def cli_run_server(host='127.0.0.1', port=8080,
                    api_host='127.0.0.1', api_port=5000, tb=False):
-    '''Run the gui server at 'http:host:port'
+    '''Run the gui server at 'http://host:port'
     The gui server displays the information exposed by the api server.
     '''
     try:

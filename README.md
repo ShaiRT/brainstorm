@@ -318,7 +318,7 @@ Run the GUI server to serve results at `'http://host:port'`:
 $ python -m brainstorm.gui run-server --help
 Usage: __main__.py run-server [OPTIONS]
 
-  Run the gui server at 'http:host:port' The gui server displays the
+  Run the gui server at 'http://host:port' The gui server displays the
   information exposed by the api server.
 
 Options:
