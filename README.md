@@ -1,6 +1,10 @@
-![build status](https://travis-ci.org/ShaiRT/BrainStorm.svg?branch=master)
-![coverage](https://codecov.io/gh/ShaiRT/BrainStorm/branch/master/graph/badge.svg)
-![Documentation Status](https://readthedocs.org/projects/brainstormproject/badge/?version=latest)
+[![Build Status](https://travis-ci.org/ShaiRT/brainstorm.svg?branch=master)](https://travis-ci.org/ShaiRT/brainstorm)
+[![codecov](https://codecov.io/gh/ShaiRT/brainstorm/branch/master/graph/badge.svg)](https://codecov.io/gh/ShaiRT/brainstorm)
+[![Documentation Status](https://readthedocs.org/projects/brainstormproject/badge/?version=latest)](https://brainstormproject.readthedocs.io/en/latest/?badge=latest)
+![GitHub repo size](https://img.shields.io/github/repo-size/ShaiRT/brainstorm?color=BA51F7)
+![GitHub top language](https://img.shields.io/github/languages/top/ShaiRT/brainstorm)
+![GitHub language count](https://img.shields.io/github/languages/count/ShaiRT/brainstorm?color=E90E0E)
+![Awesome Badges](https://img.shields.io/badge/badges-awesome-F23077.svg)
 
 # BrainStorm
 

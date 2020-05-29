@@ -22,5 +22,5 @@ setup(
                         'pymongo',
                         'requests',
                         'stringcase'],
-    tests_require = ['pytest', 'pytest-cov'],
+    tests_require = ['pytest', 'pytest-cov', 'requests-mock'],
 )
