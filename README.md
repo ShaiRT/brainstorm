@@ -91,9 +91,9 @@ Also see [example](#Example).
 To upload data to the server, use the client's upload-sample command:
 ```sh
 $ python -m brainstorm.client upload-sample \
--h/--host '127.0.0.1' \
--p/--port 8000 \
-'snapshot.mind.gz'
+        -h/--host '127.0.0.1'               \
+        -p/--port 8000                      \
+        'snapshot.mind.gz'
 ```
 
 To view information from a sample in terminal without sending to server use the client's read command:
@@ -111,9 +111,9 @@ $ python -m brainstorm.client read 'sample.mind.gz'
 To run the server use the following command:
 ```sh
 $ python -m brainstorm.server run-server \
--h/--host '127.0.0.1' \
--p/--port 8000 \
-'rabbitmq://127.0.0.1:5672'
+        -h/--host '127.0.0.1'            \
+        -p/--port 8000                   \
+        'rabbitmq://127.0.0.1:5672'
 ```
 > Note: This will create a `data` directory in your current working directory with the images the server receives. To specify a different directory use the `--path` flag.
  
@@ -154,17 +154,17 @@ The saver reads data from a message queue and saves it in a database.
 The following commands are supported:
 - To save information from a file to a database run:
 ```sh
-$ python -m brainstorm.saver save \
--d/--database mongodb://localhost:27017 \
-'result.data'
+$ python -m brainstorm.saver save               \
+        -d/--database mongodb://localhost:27017 \
+        'result.data'
 ```
 In this example `mongodb://localhost:27017` is the database url, and `result.data` is the path to a file that should contain a snapshot `dict` in json format, with a `'datetime'` and a `'user'` field.
 
 - To run the saver to save data from a message queue to a database run:
 ```sh
 $ python -m brainstorm.saver run-saver \
-mongodb://localhost:27017   \
-rabbitmq://127.0.0.1:5672
+        mongodb://localhost:27017      \
+        rabbitmq://127.0.0.1:5672
 ```
 Here `mongodb://localhost:27017` is the database url, and `rabbitmq://127.0.0.1:5672` is the message queue url.
 
@@ -179,9 +179,9 @@ See [documentation](https://brainstormproject.readthedocs.io/en/latest/brainstor
 To run `brainstorm.api` simply use
 ```sh
 $ python -m brainstorm.api run-server \
--h/--host '127.0.0.1'  \
--p/--port 5000  \
--d/--database 'mongodb://127.0.0.1:27017'
+        -h/--host '127.0.0.1'         \
+        -p/--port 5000                \
+        -d/--database 'mongodb://127.0.0.1:27017'
 ```
 The API server will respond to the following requests:
 
@@ -232,11 +232,11 @@ $ python -m brainstorm.cli get-result 1 2 pose
 Run the GUI server to serve results at `'http://host:port'`:
 
 ```sh
-$ python -m brainstorm.gui run-server \  
--h/--host '127.0.0.1'  \
--p/--port 8080  \
--H/--api-host '127.0.0.1'  \
--P/--api-port 5000
+$ python -m brainstorm.gui run-server \
+        -h/--host '127.0.0.1'         \
+        -p/--port 8080                \
+        -H/--api-host '127.0.0.1'     \
+        -P/--api-port 5000
 ```
 
 > Note:
