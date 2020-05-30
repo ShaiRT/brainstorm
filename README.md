@@ -121,7 +121,7 @@ $ python -m brainstorm.server run-server \
 
 Various parts of this project use a message queue to publish and consume information.
 The current implementation supports [RabbitMQ](https://www.rabbitmq.com/) as a message queue.
-See [documentation]([https://brainstormproject.readthedocs.io/en/latest/brainstorm.mq_drivers.html](https://brainstormproject.readthedocs.io/en/latest/brainstorm.mq_drivers.html)) to learn about adding a new message queue driver.
+See [documentation](https://brainstormproject.readthedocs.io/en/latest/brainstorm.mq_drivers.html) to learn about adding a new message queue driver.
 
 #### Parsers
 
@@ -172,7 +172,7 @@ Here `mongodb://localhost:27017` is the database url, and `rabbitmq://127.0.0.1:
 
 Various parts of this project use a database to save and read information.
 The current implementation supports [MongoDB](https://www.mongodb.com/) as a database.
-See [documentation]([https://brainstormproject.readthedocs.io/en/latest/brainstorm.database_drivers.html](https://brainstormproject.readthedocs.io/en/latest/brainstorm.database_drivers.html)) to learn about adding a new database driver.
+See [documentation](https://brainstormproject.readthedocs.io/en/latest/brainstorm.database_drivers.html) to learn about adding a new database driver.
 
 #### API
 
