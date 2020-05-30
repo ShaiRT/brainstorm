@@ -145,8 +145,7 @@ The implemented parsers are:
 - color_image
 - depth_image
 
-To add new parsers to the `brainstorm.parsers` package, simply add a `.py` file to the packge containing a `parse_parser_name(snapshot)` function or a `ParserNameParser` class with a `self.parse(snapshot)` method.
-** files starting with `_` will be ignored.
+To add new parsers to the `brainstorm.parsers` package, simply add a `.py` file to the packge containing a `parse_parser_name(snapshot)` function or a `ParserNameParser` class with a `self.parse(snapshot)` method. Files starting with `_` will be ignored.
 
 #### Saver
 
