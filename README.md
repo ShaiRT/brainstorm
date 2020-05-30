@@ -128,16 +128,16 @@ See [documentation](https://brainstormproject.readthedocs.io/en/latest/brainstor
 `brainstorm.parsers` provides the following command line interface:
 
 -  The following command will use a specified parser to parse a snapshot in a given file. The file should contain a snapshot `dict` in json format, with a `'datetime'` and a `'user'` field.
-```sh
-$ python -m brainstorm.parsers parse pose 'snapshot.raw'
-```
-In this example `pose` is the name of the parser and `snapshot.raw` is the path to the file to parse.
+  ```sh
+  $ python -m brainstorm.parsers parse pose 'snapshot.raw'
+  ```
+  In this example `pose` is the name of the parser and `snapshot.raw` is the path to the file to parse.
 
 - The next command will run a specified parser to listen to a message queue with given url, parse data, and post back to the message queue:
-```sh
-$ python -m brainstorm.parsers run-parser feelings 'rabbitmq://127.0.0.1:5672/'
-```
-In this example `feelings` is the name of the parser and `rabbitmq://127.0.0.1:5672/` is the message queue url.
+  ```sh
+  $ python -m brainstorm.parsers run-parser feelings 'rabbitmq://127.0.0.1:5672/'
+  ```
+  In this example `feelings` is the name of the parser and `rabbitmq://127.0.0.1:5672/` is the message queue url.
 
 The implemented parsers are:
 - pose
@@ -153,20 +153,20 @@ To add new parsers to the `brainstorm.parsers` package, simply add a `.py` file 
 The saver reads data from a message queue and saves it in a database.
 The following commands are supported:
 - To save information from a file to a database run:
-```sh
-$ python -m brainstorm.saver save               \
-        -d/--database mongodb://localhost:27017 \
-        'result.data'
-```
-In this example `mongodb://localhost:27017` is the database url, and `result.data` is the path to a file that should contain a snapshot `dict` in json format, with a `'datetime'` and a `'user'` field.
+  ```sh
+  $ python -m brainstorm.saver save               \
+          -d/--database mongodb://localhost:27017 \
+          'result.data'
+  ```
+  In this example `mongodb://localhost:27017` is the database url, and `result.data` is the path to a file that should contain a snapshot `dict` in json format, with a `'datetime'` and a `'user'` field.
 
 - To run the saver to save data from a message queue to a database run:
-```sh
-$ python -m brainstorm.saver run-saver \
-        mongodb://localhost:27017      \
-        rabbitmq://127.0.0.1:5672
-```
-Here `mongodb://localhost:27017` is the database url, and `rabbitmq://127.0.0.1:5672` is the message queue url.
+  ```sh
+  $ python -m brainstorm.saver run-saver \
+          mongodb://localhost:27017      \
+          rabbitmq://127.0.0.1:5672
+  ```
+  Here `mongodb://localhost:27017` is the database url, and `rabbitmq://127.0.0.1:5672` is the message queue url.
 
 #### Database
 
