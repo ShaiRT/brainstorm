@@ -47,12 +47,14 @@ def save_blobs(snapshot, *, path):
     path.mkdir(parents=True, exist_ok=True)
     color_image_path = path / 'color_image'
     depth_image_path = path / 'depth_image'
-    color_image_path.write_bytes(snapshot['color_image']['data'])
-    depth_image_path.write_bytes(snapshot['depth_image']['data'])
-    del snapshot['color_image']['data']
-    del snapshot['depth_image']['data']
-    snapshot['color_image']['path'] = str(color_image_path)
-    snapshot['depth_image']['path'] = str(depth_image_path)
+    if 'color_image' in snapshot:
+        color_image_path.write_bytes(snapshot['color_image']['data'])
+        del snapshot['color_image']['data']
+        snapshot['color_image']['path'] = str(color_image_path)
+    if 'depth_image' in snapshot:
+        depth_image_path.write_bytes(snapshot['depth_image']['data'])
+        del snapshot['depth_image']['data']
+        snapshot['depth_image']['path'] = str(depth_image_path)
     snapshot['user']['birthday'] = snapshot['user']['birthday'].timestamp()
     snapshot['datetime'] = snapshot['datetime'].timestamp() * 1000
 

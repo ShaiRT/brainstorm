@@ -39,7 +39,7 @@ The results are then exposed via a RESTful [API](#API), which is consumed by a [
     ```
 
     > Note:
-    > Before running this script make sure you have docker and docker-compose installed.
+    > Before running this script make sure you have `docker` and `docker-compose` installed.
     > If not, use ```$ ./scripts/install-docker.sh``` to install it.
 
 3. To check that everything is working as expected, run the tests:
@@ -83,142 +83,105 @@ Also see [example](#Example).
 > Note:
 > In all of the following commands, message queue and database urls must be in the form `'scheme://host:port'`. The scheme must be supported by `brainstorm.mq_draivers` and `brainstorm.database_drivers`, and the message queue / database are assumed to already be running in the given host and port.
 
+> Note:
+> To get more help on the following commands use the `--help` flag.
+
 #### Client
 
-To upload data to the server, use the clients upload-sample command:
-```
-$ python -m brainstorm.client upload-sample --help
-Usage: __main__.py upload-sample [OPTIONS] PATH
-
-  Upload a sample in given path to the server. The snapshots are POSTed to
-  http://host:port/snapshot in bson format.
-
-Options:
-  -h, --host TEXT            ip address of the server  [default: 127.0.0.1]
-  -p, --port INTEGER         the server port  [default: 8000]
-  -rd, --reader-driver TEXT  a driver for the sample reader (from
-                             brainstorm.reader_drivers)  [default: protobuf]
-
-  -t, --traceback            show full traceback on failure  [default: False]
-  --help                     Show this message and exit.
+To upload data to the server, use the client's upload-sample command:
+```sh
+$ python -m brainstorm.client upload-sample \
+-h/--host '127.0.0.1' \
+-p/--port 8000 \
+'snapshot.mind.gz'
 ```
 
-To view information in a sample in command line without sending to server use the clients read command:
+To view information from a sample in terminal without sending to server use the client's read command:
+```sh
+$ python -m brainstorm.client read 'sample.mind.gz'
 ```
-$ python -m brainstorm.client read --help
-Usage: __main__.py read [OPTIONS] PATH
-
-  Read the sample in given path and print the information.
-
-Options:
-  -d, --driver TEXT  the name of the driver for the sample - must be a driver
-                     from brainstorm.reader_drivers  [default: protobuf]
-
-  -t, --traceback    show full traceback on failure  [default: False]
-  --help             Show this message and exit.
-```
+> Note:
+> The sample format has to be supported by `brainstorm.client.reader_drivers`.
+> The default format is `protobuf` as specified in the [documentation]([https://brainstormproject.readthedocs.io/en/latest/brainstorm.client.reader_drivers.html#brainstorm-client-reader-drivers-protobuf-driver-module](https://brainstormproject.readthedocs.io/en/latest/brainstorm.client.reader_drivers.html#brainstorm-client-reader-drivers-protobuf-driver-module)).
+> To use a different format see `--help`.
+> To add a new driver see instructions [here]([https://brainstormproject.readthedocs.io/en/latest/brainstorm.client.reader_drivers.html#brainstorm-client-reader-drivers-package](https://brainstormproject.readthedocs.io/en/latest/brainstorm.client.reader_drivers.html#brainstorm-client-reader-drivers-package)).
 
 #### Server
 
 To run the server use the following command:
+```sh
+$ python -m brainstorm.server run-server \
+-h/--host '127.0.0.1' \
+-p/--port 8000 \
+'rabbitmq://127.0.0.1:5672'
 ```
-$ python -m brainstorm.server run-server --help
-Usage: __main__.py run-server [OPTIONS] URL
-
-  run the server to recieve snapshots and post to a message queue in given
-  url.
-
-Options:
-  -h, --host TEXT     the server host  [default: 127.0.0.1]
-  -p, --port INTEGER  the server port  [default: 8000]
-  --path TEXT         directory for blob storage  [default: data]
-  -t, --traceback     show full traceback on failure  [default: False]
-  --help              Show this message and exit.
-```
+> Note: This will create a `data` directory in your current working directory with the images the server receives. To specify a different directory use the `--path` flag.
  
 #### Message Queue
 
 Various parts of this project use a message queue to publish and consume information.
 The current implementation supports [RabbitMQ](https://www.rabbitmq.com/) as a message queue.
+See [documentation]([https://brainstormproject.readthedocs.io/en/latest/brainstorm.mq_drivers.html](https://brainstormproject.readthedocs.io/en/latest/brainstorm.mq_drivers.html)) to learn about adding a new message queue driver.
 
 #### Parsers
 
 `brainstorm.parsers` provides the following command line interface:
-```
-$ python -m brainstorm.parsers parse --help
-Usage: __main__.py parse [OPTIONS] NAME PATH
 
-  parse snapshot data in given path with parser with given name and print
-  result
-
-Options:
-  -t, --traceback  show full traceback on failure  [default: False]
-  --help           Show this message and exit.
+-  The following command will use a specified parser to parse a snapshot in a given file. The file should contain a snapshot `dict` in json format, with a `'datetime'` and a `'user'` field.
+```sh
+$ python -m brainstorm.parsers parse pose 'snapshot.raw'
 ```
-```
-$ python -m brainstorm.parsers run-parser --help
-Usage: __main__.py run-parser [OPTIONS] NAME URL
+In this example `pose` is the name of the parser and `snapshot.raw` is the path to the file to parse.
 
-  run parser with given name to listen to message queue in given url, parse
-  data, and post back to 'data' topic exchange of the message queue with
-  routing_key=name.
-
-Options:
-  -t, --traceback  show full traceback on failure  [default: False]
-  --help           Show this message and exit.
+- The next command will run a specified parser to listen to a message queue with given url, parse data, and post back to the message queue:
+```sh
+$ python -m brainstorm.parsers run-parser feelings 'rabbitmq://127.0.0.1:5672/'
 ```
-To add parsers to the `brainstorm.parsers` package, simply add a `.py` file to the packge containing a `parse_parser_name(snapshot)` function or a `ParserNameParser` class with a `self.parse(snapshot)` method.
+In this example `feelings` is the name of the parser and `rabbitmq://127.0.0.1:5672/` is the message queue url.
+
+The implemented parsers are:
+- pose
+- feelings
+- color_image
+- depth_image
+
+To add new parsers to the `brainstorm.parsers` package, simply add a `.py` file to the packge containing a `parse_parser_name(snapshot)` function or a `ParserNameParser` class with a `self.parse(snapshot)` method.
 ** files starting with `_` will be ignored.
 
 #### Saver
 
+The saver reads data from a message queue and saves it in a database.
+The following commands are supported:
+- To save information from a file to a database run:
+```sh
+$ python -m brainstorm.saver save \
+-d/--database mongodb://localhost:27017 \
+'result.data'
 ```
-$ python -m brainstorm.saver save --help
-Usage: __main__.py save [OPTIONS] PATH
+In this example `mongodb://localhost:27017` is the database url, and `result.data` is the path to a file that should contain a snapshot `dict` in json format, with a `'datetime'` and a `'user'` field.
 
-  Save data in given path to database in given url
-
-Options:
-  -d, --database TEXT  the url of the database  [default:
-                       mongodb://localhost:27017/]
-
-  --help               Show this message and exit.
+- To run the saver to save data from a message queue to a database run:
+```sh
+$ python -m brainstorm.saver run-saver \
+mongodb://localhost:27017   \
+rabbitmq://127.0.0.1:5672
 ```
-```
-$ python -m brainstorm.saver run-saver --help
-Usage: __main__.py run-saver [OPTIONS] DATABASE_URL MQ_URL
-
-  Run the saver to save messages from message queue in given url to
-  database. The saver saves all messages received in 'data' topic exchange.
-
-Options:
-  -t, --traceback  show full traceback on failure  [default: False]
-  --help           Show this message and exit.
-```
+Here `mongodb://localhost:27017` is the database url, and `rabbitmq://127.0.0.1:5672` is the message queue url.
 
 #### Database
 
 Various parts of this project use a database to save and read information.
-The current implementation supports [MongoDB](https://www.mongodb.com/) as a message queue.
+The current implementation supports [MongoDB](https://www.mongodb.com/) as a database.
+See [documentation]([https://brainstormproject.readthedocs.io/en/latest/brainstorm.database_drivers.html](https://brainstormproject.readthedocs.io/en/latest/brainstorm.database_drivers.html)) to learn about adding a new database driver.
 
 #### API
 
 To run `brainstorm.api` simply use
-```
-$ python -m brainstorm.api run-server --help
-Usage: __main__.py run-server [OPTIONS]
-
-  Run the api server to respond to http requests at 'http://host:port' and
-  expose the data in the database.
-
-Options:
-  -h, --host TEXT      the servers host  [default: 127.0.0.1]
-  -p, --port INTEGER   the servers port  [default: 5000]
-  -d, --database TEXT  the url of the database  [default:
-                       mongodb://localhost:27017]
-
-  -t, --traceback      show full traceback on failure  [default: False]
-  --help               Show this message and exit.
+```sh
+$ python -m brainstorm.api run-server \
+-h/--host '127.0.0.1'  \
+-p/--port 5000  \
+-d/--database 'mongodb://127.0.0.1:27017'
 ```
 The API server will respond to the following requests:
 
@@ -245,101 +208,48 @@ The API server will respond to the following requests:
 
 The CLI is available via `brainstorm.cli` and supports the following commands:
 
+```sh
+$ python -m brainstorm.cli get-users
 ```
-$ python -m brainstorm.cli get-users --help
-Usage: __main__.py get-users [OPTIONS]
-
-  Print a list of IDs and names of all supported users.
-
-Options:
-  -h, --host TEXT     the api host  [default: 127.0.0.1]
-  -p, --port INTEGER  the api port  [default: 5000]
-  -t, --traceback     show full traceback on failure  [default: False]
-  --help              Show this message and exit.
+```sh
+$ python -m brainstorm.cli get-user 1
 ```
+```sh
+$ python -m brainstorm.cli get-snapshots 1
 ```
-$ python -m brainstorm.cli get-user --help
-Usage: __main__.py get-user [OPTIONS] USER_ID
-
-  Print the specified user’s details: ID, name, birthday and gender.
-
-Options:
-  -h, --host TEXT     the api host  [default: 127.0.0.1]
-  -p, --port INTEGER  the api port  [default: 5000]
-  -t, --traceback     show full traceback on failure  [default: False]
-  --help              Show this message and exit.
+```sh
+$ python -m brainstorm.cli get-snapshot 1 2
 ```
+```sh
+$ python -m brainstorm.cli get-result 1 2 pose
 ```
-$ python -m brainstorm.cli get-snapshots --help
-Usage: __main__.py get-snapshots [OPTIONS] USER_ID
+>Use the `--help` flag to learn more about these commands.
 
-  Print a list of the specified user’s snapshot IDs and datetimes.
-
-Options:
-  -h, --host TEXT     the api host  [default: 127.0.0.1]
-  -p, --port INTEGER  the api port  [default: 5000]
-  -t, --traceback     show full traceback on failure  [default: False]
-  --help              Show this message and exit.
-```
-```
-$ python -m brainstorm.cli get-snapshot --help
-Usage: __main__.py get-snapshot [OPTIONS] USER_ID SNAPSHOT_ID
-
-  Print the specified snapshot’s details: ID, datetime, and the available
-  results’ names.
-
-Options:
-  -h, --host TEXT     the api host  [default: 127.0.0.1]
-  -p, --port INTEGER  the api port  [default: 5000]
-  -t, --traceback     show full traceback on failure  [default: False]
-  --help              Show this message and exit.
-```
-```
-$ python -m brainstorm.cli get-result --help
-Usage: __main__.py get-result [OPTIONS] USER_ID SNAPSHOT_ID RESULT_NAME
-
-  Print the specified snapshot’s result (if available). When given a path,
-  the result is saved to the path in json format instead of being printed.
-
-Options:
-  -h, --host TEXT     the api host  [default: 127.0.0.1]
-  -p, --port INTEGER  the api port  [default: 5000]
-  -s, --save TEXT     path to save data
-  -t, --traceback     show full traceback on failure  [default: False]
-  --help              Show this message and exit.
-```
 > Make sure the api server is running on the default host and port (or specify a different host and port) before running the CLI commands.
 
 #### GUI
 
 Run the GUI server to serve results at `'http://host:port'`:
 
-```
-$ python -m brainstorm.gui run-server --help
-Usage: __main__.py run-server [OPTIONS]
-
-  Run the gui server at 'http://host:port' The gui server displays the
-  information exposed by the api server.
-
-Options:
-  -h, --host TEXT         the gui server host  [default: 127.0.0.1]
-  -p, --port INTEGER      the gui server port  [default: 8080]
-  -H, --api-host TEXT     the api server host  [default: 127.0.0.1]
-  -P, --api-port INTEGER  the api server port  [default: 5000]
-  -t, --traceback         show full traceback on failure  [default: False]
-  --help                  Show this message and exit.
+```sh
+$ python -m brainstorm.gui run-server \  
+-h/--host '127.0.0.1'  \
+-p/--port 8080  \
+-H/--api-host '127.0.0.1'  \
+-P/--api-port 5000
 ```
 
 > Note:
 > Before running this command for the first time run ```$ ./scripts/build-gui.sh```.
 > This is only necessary when running this command without ```./scripts/run-pipeline.sh```.
 
+
 ### Example
 
 Here is an example of running the pipeline and uploading a sample:
 
 ```sh
-$ ./scripts/run-pipeline.sh 
+$ ./scripts/run-pipeline.sh
 ...
 
 $ python -m brainstorm.client upload-sample sample.mind.gz
@@ -355,11 +265,14 @@ $ python -m brainstorm.cli get-users
 |      12     |   Shai Rahat   |
 +-------------+----------------+
 ```
-After running the pipline like this results will be available at [http://localhost:8080](http://localhost:8080).
+After running the pipline like this, results will be available at [http://localhost:8080](http://localhost:8080).
 
 To shut down the pipline:
 ```sh
-$ ./scripts/stop-pipeline.sh 
+$ ./scripts/stop-pipeline.sh
 ...
 $
 ```
+_________________________
+
+**Happy BrainStorming !**
