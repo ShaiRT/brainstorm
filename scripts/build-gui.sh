@@ -15,7 +15,7 @@ function main {
 	sudo apt install -y nodejs 
 	cd ./brainstorm/gui/gui-app
     sudo npm install
-    npm run build
+    sudo npm run build
     cd ../../..
     echo -e "${GREEN}${BOLD}Done!${NC}\n"
     echo -e "Try running ${BLUE}$ python -m brainstorm.gui run-server${NC}"
