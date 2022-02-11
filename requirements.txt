@@ -33,7 +33,7 @@ Pillow==7.1.2
 pluggy==0.13.1
 prettytable==0.7.2
 prettytable-extras==0.1.0
-protobuf==3.12.1
+protobuf==3.15.0
 py==1.8.1
 pycodestyle==2.5.0
 pyflakes==2.1.1
